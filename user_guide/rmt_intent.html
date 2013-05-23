@@ -1,0 +1,375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>PeerDeviceNet - Remote intenting</title>
+  </head>
+  <body style="color: rgb(0, 0, 0);" alink="#EE0000" link="#0000EE"
+    vlink="#551A8B">
+    <div style="text-align: center;">
+      <table bgcolor="#ccccff" border="0" cellpadding="2"
+        cellspacing="2" width="100%">
+        <tbody>
+          <tr>
+            <td align="right" valign="middle" width="45%"><img style="
+                width: 72px; height: 72px;" alt="PeerDeviceNet"
+                src="router72.png"><br>
+            </td>
+            <td align="left" valign="middle">
+              <h2>API: Remote intenting<br>
+              </h2>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table style=" text-align: left; width: 100%; background-color:
+      rgb(204, 255, 255);" border="0" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="text-align: center; vertical-align: middle;
+            background-color: rgb(204, 255, 255);"><a href="index.html">Home</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="features.html">Features</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="install.html">Install</a> &nbsp;
+            |&nbsp;&nbsp; <a href="user_guide.html">User guide</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Developer API&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="contact.html">Contact</a></td>
+        </tr>
+        <tr align="center">
+          <td style="vertical-align: top; background-color: rgb(204,
+            255, 255);"><a href="api.html">Introduction</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; Remote intenting&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="grp_comm.html">Group communication</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="dev_conn.html">Device connection</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="tutorials.html">Tutorials</a> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Intents is Android's messaging "bus" to connect system standard
+    components and 3rd party apps inside an android device.
+    PeerDeviceNet extends this messaging bus to peer devices, allowing
+    apps send remote intents. Thru PeerDeviceNet, apps can start remote
+    activities and services, or send remote broadcasts to peer devices.<br>
+    <br>
+    The standard android API for intent are:<br>
+    <ul>
+      <li>startActivity() / startActivityForResult()</li>
+      <li>startService() / bindService()</li>
+      <li>sendBroadcast()</li>
+    </ul>
+    <p>PeerDeviceNet provides similar API to send remote intents. Apps
+      should add this permission in its AndroidManifest.xml:<br>
+    </p>
+    <p style="background-color: rgb(204, 204, 255);">&lt;uses-permission
+      android:name="com.xconns.peerdevicenet.permission.REMOTE_INTENT"
+      /&gt;<br>
+    </p>
+    <p style="background-color: rgb(255, 255, 255);">Please note that
+      when sending remote intents, we can not send intents which
+      directly access device features such as camera, GPS etc. for
+      security reason, because they require system permissions which
+      PeerDeviceNet may not have. For these intents, we should create
+      customized intents and send to receiving apps at peer devices. At
+      receiving devices, an app with right permissions will register for
+      this customized intent and start activity using the right system
+      intents. Please check out <a
+        href="https://github.com/yigongliu/PeerDeviceNet_RemoteIntentActivity">RemoteIntentDemo</a>
+      app and see how ACTION_DIAL and ACTION_CALL are handled.<br>
+    </p>
+    <p style="background-color: rgb(255, 255, 255);">Remote intenting
+      are supported via the following three kinds of APIs.</p>
+    <ol>
+      <li>Intents api<br>
+      </li>
+    </ol>
+    <div style="margin-left: 40px;">Apps can send remote intents by
+      calling startActivity() / startService() with a "carrier" intent
+      defined as following:<br>
+      <ul>
+        <li>Use remote intent actions:</li>
+        <ul>
+          <li>ACTION_START_REMOTE_ACTIVITY =
+            "com.xconns.peerdevicenet.START_REMOTE_ACTIVITY"</li>
+          <li>ACTION_START_REMOTE_ACTIVITY_FOR_RESULT =
+            "com.xconns.peerdevicenet.START_REMOTE_ACTIVITY_FOR_RESULT"
+            (incomplete)<br>
+          </li>
+          <li>ACTION_START_REMOTE_SERVICE =
+            "com.xconns.peerdevicenet.START_REMOTE_SERVICE"</li>
+          <li>ACTION_SEND_REMOTE_BROADCAST =
+            "com.xconns.peerdevicenet.SEND_REMOTE_BROADCAST"</li>
+        </ul>
+        <li>
+          <p>Pack the remote intent to sent as an extended data item
+            with name "REMOTE_INTENT":</p>
+        </li>
+      </ul>
+      <div style="margin-left: 80px;">carrierIntent.putExtra("REMOTE_INTENT",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        remote_intent);<br>
+      </div>
+      <ul>
+        <li>Set destination device info (optional when using
+          startActivity()):</li>
+        <ul>
+          <li>carrierIntent.putExtra(PEER_NAME, ...);</li>
+          <li>carrierIntent.putExtra(PEER_ADDR, ...);</li>
+          <li>carrierIntent.putExtra(PEER_PORT, ...);</li>
+        </ul>
+        <li>
+          <p>Optionally add app package name; So at destination device,
+            if no existing app can handle the sent remote intent,
+            PeerDeviceNet will prompt installation of named app from app
+            store:</p>
+        </li>
+      </ul>
+      <div style="margin-left: 80px;">carrierIntent.putExtra("PACKAGE_NAME",
+
+
+
+
+
+
+
+
+
+
+
+        ...);</div>
+      <p> All the action names and data item key names are defined in <a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/Router.java">Router.java</a>.</p>
+      <p>When sending remote intents with startService(), the
+        destination device info items must be set.</p>
+      When sending remote intents with startActivity(), PeerDeviceNet
+      will send it directly if the destination device is set inside
+      carrier intent and already connected; otherwise it will bring up
+      PeerDeviceNet GUI showing the list of connected devices to allow
+      user choose which destination devices to send, or start
+      PeerDeviceNet connection manager to search and connect to peer
+      devices.<br>
+      <p> Please check out the<a
+href="https://github.com/yigongliu/PeerDeviceNet_RemoteIntentActivity/blob/master/src/com/xconns/samples/RemoteIntentDemo/SendIntentsActivity.java">
+          source code of RemoteIntentDemo</a> app, which shows how to
+        use startActivity() to send remote intents. The complete source
+        code project can be <a
+          href="https://github.com/yigongliu/PeerDeviceNet_RemoteIntentActivity">downloaded
+
+
+
+
+
+
+
+
+
+          here</a> and app can be tried out directly <a
+href="https://play.google.com/store/apps/details?id=com.xconns.samples.RemoteIntentDemo">from
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          Google play</a>.</p>
+    </div>
+    <ol start="2">
+      <li>IDL api<br>
+      </li>
+    </ol>
+    <div style="margin-left: 40px;">The IDL(aidl) interfaces related
+      remote intenting are defined in two files:<br>
+      <ul>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRemoteIntentService.aidl">IRemoteIntentService.aidl</a>
+          : provide async methods to invoke service<br>
+        </li>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRemoteIntentHandler.aidl">IRemoteIntentHandler.aidl</a>:
+          provide async methods for service to report status and result<br>
+        </li>
+      </ul>
+      Apps using IDL api will bind to the following named service:<br>
+      <br>
+      <div style="margin-left: 40px;">ACTION_REMOTE_INTENT_SERVICE =
+        "com.xconns.peerdevicenet.RemoteIntentService"<br>
+      </div>
+      <br>
+      This service will expose the following asynchronous methods for
+      sending remote intents:<br>
+      <div style="margin-left: 40px;"><b><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRemoteIntentService.aidl">IRemoteIntentService</a>
+          {<br>
+          &nbsp;&nbsp;&nbsp; oneway void startRemoteActivity(in
+          DeviceInfo device, in Intent intent, IRemoteIntentHandler h);<br>
+          &nbsp;&nbsp;&nbsp; oneway void startRemoteActivityForResult(in
+          DeviceInfo device, in Intent intent, IRemoteIntentHandler h);<br>
+          &nbsp;&nbsp;&nbsp; oneway void startRemoteService(in
+          DeviceInfo device, in Intent intent, IRemoteIntentHandler h);<br>
+          &nbsp;&nbsp;&nbsp; oneway void sendRemoteBroadcast(in
+          DeviceInfo device, in Intent intent, IRemoteIntentHandler h);<br>
+          &nbsp;&nbsp;&nbsp; oneway void cancelSession(int sessionId);<br>
+          }</b><big><br>
+        </big></div>
+      <br>
+      Apps will register the following handler to handle status of sent
+      intents.<br>
+      <div style="margin-left: 40px;"><b><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRemoteIntentHandler.aidl">IRemoteIntentHandler</a>
+          {<br>
+          &nbsp;&nbsp;&nbsp; oneway void onError(in String errInfo);<br>
+          &nbsp;&nbsp;&nbsp; oneway void onResult(in Intent result);<br>
+          &nbsp;&nbsp;&nbsp; oneway void onStart(int sessionId);<br>
+          &nbsp;&nbsp;&nbsp; oneway void onProgress(int percent); <br>
+          &nbsp;&nbsp;&nbsp; oneway void onComplete();<br>
+          &nbsp;&nbsp;&nbsp; oneway void onRejected();<br>
+          &nbsp;&nbsp;&nbsp; oneway void onCanceled();<br>
+          }<span style="font-weight: bold;"></span></b><big><br>
+        </big></div>
+      <br>
+      Please check out this <a
+        href="https://github.com/yigongliu/PeerDeviceNet_RemoteIntentService">RemoteIntentDemo
+
+
+
+
+
+
+
+
+
+
+        using aidl interface</a>.<br>
+      <div style="margin-left: 40px;"><span style="font-weight: bold;"></span></div>
+    </div>
+    <ol start="3">
+      <li>Messenger api</li>
+    </ol>
+    <p style="margin-left: 40px;">More details and sample code is
+      coming.</p>
+    <p style="margin-left: 40px;"><br>
+    </p>
+  </body>
+</html>

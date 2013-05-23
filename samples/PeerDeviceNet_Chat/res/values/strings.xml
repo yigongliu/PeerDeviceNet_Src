@@ -1,0 +1,12 @@
+<resources>
+
+    <string name="app_name">Chat (PeerDeviceNet)</string>
+    <string name="send">Send</string>
+    <string name="conn_mgr">PeerConnector</string>
+    <string name="chat_intenting">Chat By Intenting</string>
+    <string name="chat_messenger">Chat By Messenger</string>
+    <string name="chat_aidl">Chat By AIDL</string>
+    <string name="startup_choice">Startup Choice: </string>
+    <string name="startup">Start</string>
+    
+</resources>

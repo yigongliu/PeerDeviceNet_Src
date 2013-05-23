@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/2385/trunk/android/src/com/google/zxing/client/android/common/executor
+END
+AsyncTaskExecManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/2381/trunk/android/src/com/google/zxing/client/android/common/executor/AsyncTaskExecManager.java
+END
+AsyncTaskExecInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/2381/trunk/android/src/com/google/zxing/client/android/common/executor/AsyncTaskExecInterface.java
+END
+HoneycombAsyncTaskExecInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/!svn/ver/2381/trunk/android/src/com/google/zxing/client/android/common/executor/HoneycombAsyncTaskExecInterface.java
+END
+DefaultAsyncTaskExecInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/!svn/ver/2385/trunk/android/src/com/google/zxing/client/android/common/executor/DefaultAsyncTaskExecInterface.java
+END

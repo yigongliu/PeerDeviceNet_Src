@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*
+ * Copyright (C) 2013 Yigong Liu, XCONNS, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/conn_settings" >
+
+    <PreferenceCategory
+        android:key="gen_settings"
+        android:title="@string/gen_settings" >
+        <EditTextPreference
+            android:dialogTitle="@string/device_name"
+            android:key="DEVICE_NAME"
+            android:summary="@string/unknown"
+            android:title="@string/device_name" />
+
+        <com.xconns.peerdevicenet.cm.NetListPreference
+            android:dialogTitle="@string/config_nets"
+            android:entries="@array/config_nets_entries"
+            android:entryValues="@array/config_nets_values"
+            android:key="NET_NAME"
+            android:summary="@string/config_new_nets"
+            android:title="@string/config_nets" />
+        
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/find_devices" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_ssl"
+            android:summary="@string/summary_use_ssl"
+            android:title="@string/use_ssl" />
+        
+        <com.xconns.peerdevicenet.cm.ProgressPreference
+            android:key="scan_nearby"
+            android:title="@string/scan_nearby" />
+
+        <com.xconns.peerdevicenet.cm.ProgressPreference
+            android:key="connector"
+            android:title="@string/connector" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="conn_devices"
+        android:title="@string/conn_devices" >
+    </PreferenceCategory>
+
+</PreferenceScreen>

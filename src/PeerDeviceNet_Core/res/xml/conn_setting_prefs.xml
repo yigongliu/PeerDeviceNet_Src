@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*
+ * Copyright (C) 2013 Yigong Liu, XCONNS, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:summary="@string/detail_params"
+    android:title="@string/conn_settings" >
+
+    <PreferenceCategory
+        android:key="wifidir_hotspot_cat"
+        android:title="@string/wifidir_hotspot" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="wifidir_hotspot"
+            android:summary="@string/summary_wifidir_hotspot"
+            android:title="@string/title_wifidir_hotspot" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings" >
+        <Preference
+            android:key="DEVICE_ADDR"
+            android:summary="@string/unknown"
+            android:title="@string/device_addr" />
+        <Preference
+            android:dialogTitle="@string/device_port"
+            android:key="DEVICE_PORT"
+            android:summary="@string/unknown"
+            android:title="@string/device_port" />
+
+        <ListPreference
+            android:defaultValue="10"
+            android:dialogTitle="@string/max_sessions"
+            android:entries="@array/max_sessions_entries"
+            android:entryValues="@array/max_sessions_values"
+            android:key="max_sessions"
+            android:summary="10 sessions"
+            android:title="@string/max_sessions" />
+        <ListPreference
+            android:defaultValue="4"
+            android:dialogTitle="@string/live_timeout"
+            android:entries="@array/live_timeout_entries"
+            android:entryValues="@array/live_timeout_values"
+            android:key="live_timeout"
+            android:summary="@string/unknown"
+            android:title="@string/live_timeout" />
+        <ListPreference
+            android:defaultValue="5"
+            android:dialogTitle="@string/conn_timeout"
+            android:entries="@array/conn_timeout_entries"
+            android:entryValues="@array/conn_timeout_values"
+            android:key="conn_timeout"
+            android:summary="@string/unknown"
+            android:title="@string/conn_timeout" />
+        <ListPreference
+            android:defaultValue="30"
+            android:dialogTitle="@string/search_timeout"
+            android:entries="@array/search_timeout_entries"
+            android:entryValues="@array/search_timeout_values"
+            android:key="search_timeout"
+            android:summary="@string/unknown"
+            android:title="@string/search_timeout" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="conn_pin"
+            android:summary="@string/summary_conn_pin"
+            android:title="@string/conn_pin" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="auto_scan"
+            android:summary="@string/summary_auto_scan"
+            android:title="@string/auto_scan" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="auto_conn"
+            android:summary="@string/summary_auto_conn"
+            android:title="@string/auto_conn" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="auto_accept"
+            android:summary="@string/summary_auto_accept"
+            android:title="@string/auto_accept" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

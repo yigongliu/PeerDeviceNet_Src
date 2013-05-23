@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/2361/trunk/android/src/com/google/zxing/client/android/camera/open
+END
+DefaultOpenCameraInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/2361/trunk/android/src/com/google/zxing/client/android/camera/open/DefaultOpenCameraInterface.java
+END
+GingerbreadOpenCameraInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/!svn/ver/2361/trunk/android/src/com/google/zxing/client/android/camera/open/GingerbreadOpenCameraInterface.java
+END
+OpenCameraManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/!svn/ver/2361/trunk/android/src/com/google/zxing/client/android/camera/open/OpenCameraManager.java
+END
+OpenCameraInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/2361/trunk/android/src/com/google/zxing/client/android/camera/open/OpenCameraInterface.java
+END

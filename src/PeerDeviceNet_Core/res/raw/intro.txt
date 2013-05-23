@@ -1,0 +1,13 @@
+PeerDeviceNet connects your phones and tablets and enables data sharing.
+
+Connection Manager will start next. You can choose network, search and connect to peer devices. If you start PeerDeviceNet or tap "Search and connect" button at multiple devices simultaneously, they will find each other automatically.
+
+To send data, start the app which owns the data, such as Contacts app for contact information and Gallery app for photos and videos.
+
+Select or show the data you want to send, and tap "Share" or "Send" menu item. PeerDeviceNet will be one of "Share" targets. 
+
+Choosing PeerDeviceNet will bring up the list of connected devices to which you can send.
+
+Thanks for using PeerDeviceNet. Your suggestions and comments are highly appreciated! 
+
+Contact us at peerdevicenet@gmail.com.

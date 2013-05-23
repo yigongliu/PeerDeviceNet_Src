@@ -1,0 +1,442 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>PeerDeviceNet - Group communication</title>
+  </head>
+  <body style="color: rgb(0, 0, 0);" alink="#EE0000" link="#0000EE"
+    vlink="#551A8B">
+    <div style="text-align: center;">
+      <table bgcolor="#ccccff" border="0" cellpadding="2"
+        cellspacing="2" width="100%">
+        <tbody>
+          <tr>
+            <td align="right" valign="middle" width="45%"><img style="
+                width: 72px; height: 72px;" alt="PeerDeviceNet"
+                src="router72.png"><br>
+            </td>
+            <td align="left" valign="middle">
+              <h2>API: Group communication<br>
+              </h2>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table style=" text-align: left; width: 100%; background-color:
+      rgb(204, 255, 255);" border="0" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style=" text-align: center; vertical-align: middle;
+            background-color: rgb(204, 255, 255);"><a href="index.html">Home</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="features.html">Features</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="install.html">Install</a> &nbsp;
+            |&nbsp;&nbsp; <a href="user_guide.html">User guide</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Developer API&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="contact.html">Contact</a></td>
+        </tr>
+        <tr align="center">
+          <td style="vertical-align: top; background-color: rgb(204,
+            255, 255);"><a href="api.html">Introduction</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="rmt_intent.html">Remote intenting</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Group communication&nbsp;&nbsp; |&nbsp;&nbsp;
+            <a href="dev_conn.html">Device connection</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="tutorials.html">Tutorials</a> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The original goal of PeerDeviceNet is to enable communication among
+    a group of mobile devices. The natural choice will be multicast
+    groups, such as <a
+href="http://docs.oracle.com/javase/1.4.2/docs/api/java/net/MulticastSocket.html">Java's
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      multicast API</a>. However for mobile apps targeted by
+    PeerDeviceNet, it is not ideal solution for a number of reasons
+    including unreliable data transfers, and mostly important power
+    consumption. The recommended practice for multicast at mobile
+    devices is to turn on multicast temporarily for work such as service
+    discovery and then turn it off to save power.<br>
+    <br>
+    So PeerDeviceNet builds simple multicast groups on top of TCP
+    connections.<br>
+    <ul>
+      <li>Group is identified by a string of any content instead of by a
+        class D address and UDP port.</li>
+      <li>TCP connections among peer devices can be setup interactively
+        thru PeerDeviceNet's connection manager or programatically thru
+        connection api for complete control.<br>
+      </li>
+    </ul>
+    The simple API follows the intuitive Java MulticastSocket api and
+    can summarized as the following four operations:<br>
+    <ul>
+      <li style="background-color: rgb(204, 204, 255);">joinGroup(grouId)</li>
+      <li style="background-color: rgb(204, 204, 255);">leaveGroup(groupId)</li>
+      <li style="background-color: rgb(204, 204, 255);">send(groupId,
+        message)</li>
+      <li style="background-color: rgb(204, 204, 255);">recv(groupId,
+        message)</li>
+    </ul>
+    <p style="background-color: rgb(255, 255, 255);">Apps using this
+      group communication api should add the following permission in its
+      AndroidManifest.xml:</p>
+    <p style="background-color: rgb(204, 204, 255);">&lt;uses-permission
+      android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /&gt;<br>
+    </p>
+    <p>Many api methods will use the following class to describe peer
+      devices:</p>
+    <div style="margin-left: 40px;">class DeviceInfo {<br>
+      <div style="margin-left: 40px;">public String name;<br>
+        public String addr;<br>
+        public String port;<br>
+        ......<br>
+      </div>
+      }<br>
+      Correspondingly, use the following keys to pack the data inside a
+      message bundle:<br>
+      "PEER_NAME", "PEER_ADDR", "PEER_PORT".<br>
+    </div>
+    <p>PeerDeviceNet provides three kinds of asynchronous API to support
+      group communications:<br>
+    </p>
+    <ol>
+      <li>Intents api<br>
+      </li>
+    </ol>
+    <div style="margin-left: 40px;">Apps can send startService() intents
+      to join / leave groups and send messages with the following action
+      names:<br>
+      <ul>
+        <li>ACTION_JOIN_GROUP = "com.xconns.peerdevicenet.JOIN_GROUP"<br>
+        </li>
+        <li>ACTION_LEAVE_GROUP = "com.xconns.peerdevicenet.LEAVE_GROUP"</li>
+        <li>ACTION_SEND_MSG = "com.xconns.peerdevicenet.SEND_MSG"</li>
+      </ul>
+      Apps can receive messages and group membership change events using
+      a broadcast receiver with filters of following action names:<br>
+      <ul>
+        <li>ACTION_RECV_MSG = "com.xconns.peerdevicenet.RECV_MSG"</li>
+        <li>ACTION_PEER_JOIN = "com.xconns.peerdevicenet.PEER_JOIN"</li>
+        <li>ACTION_PEER_LEAVE = "com.xconns.peerdevicenet.PEER_LEAVE"</li>
+        <li>ACTION_SELF_JOIN = "com.xconns.peerdevicenet.SELF_JOIN"</li>
+        <li>ACTION_SELF_LEAVE = "com.xconns.peerdevicenet.SELF_LEAVE"</li>
+      </ul>
+      Message related data are packaged as intent "extras" using the
+      following keys:<br>
+      <ul>
+        <li>"GROUP_ID": a string to identify the group</li>
+        <li>"MSG_ID": an app specific message id (optional)<br>
+        </li>
+        <li>"MSG_DATA": app message data, normally a byte[] array.</li>
+        <li>"PEER_NAME", "PEER_ADDR", "PEER_PORT": destination/source
+          device info.</li>
+      </ul>
+      Please check this <a
+href="https://github.com/yigongliu/PeerDeviceNet_Chat/blob/master/src/com/xconns/samples/chat/ChatByIntentingActivity.java">Chat
+
+
+
+
+
+
+
+
+        app</a> for using intent api.<br>
+    </div>
+    <ol start="2">
+      <li>IDL api<br>
+      </li>
+    </ol>
+    <div style="margin-left: 40px;">The IDL(aidl) interfaces related to
+      group communication are defined in two files:<br>
+      <ul>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRouterGroupService.aidl">IRouterGroupService.aidl</a>
+          : provide async methods to join/leave groups and send messages<br>
+        </li>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRouterGroupHandler.aidl">IRouterGroupHandler.aidl</a>
+          : provide callbacks to receive messages and peer join/leave.<br>
+        </li>
+      </ul>
+      Apps using aidl api will bind to the following named service:<br>
+      <br>
+      <div style="margin-left: 40px;">ACTION_GROUP_SERVICE =
+        "com.xconns.peerdevicenet.GroupService"<br>
+        <br>
+      </div>
+      This service will expose the following methods to join/leave
+      groups and send messages:<br>
+      <div style="margin-left: 40px;"><b>IRouterGroupService {<br>
+          &nbsp;&nbsp;&nbsp; </b>//join a group named by "groupId"and
+        attach callback handler "h"<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void joinGroup(String groupId, in
+          DeviceInfo[] peers, in IRouterGroupHandler h);<br>
+          &nbsp;&nbsp;&nbsp; </b>//leave group identified by "groupId"<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void leaveGroup(String groupId, in
+          IRouterGroupHandler h);<br>
+          &nbsp;&nbsp;&nbsp; </b>//send message: if "dest" is not null,
+        it is only sent to device "dest"; otherwise it is broadcast to
+        all peers in group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void send(String groupId, in
+          DeviceInfo dest, in byte[] msg);<br>
+          &nbsp;&nbsp;&nbsp; </b>//request for all peers inside group
+        "groupId"<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void getPeerDevices(String
+          groupId);<br>
+          }<br>
+        </b> </div>
+      <br>
+      When joining group, apps will register handler object with methods
+      to receive messages from group and handle group membership change
+      events.<br>
+      <div style="margin-left: 40px;"><b>IRouterGroupHandler {<br>
+          &nbsp;&nbsp;&nbsp; </b>//receive a message from "src"<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onReceive(in DeviceInfo src,
+          in byte[] msg);<br>
+          &nbsp;&nbsp;&nbsp; </b>//a new device join the group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onPeerJoin(in DeviceInfo
+          device);<br>
+          &nbsp;&nbsp;&nbsp; </b>//a device just left group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onPeerLeave(in DeviceInfo
+          device);<br>
+          &nbsp;&nbsp;&nbsp; </b>//i just finished joining a group,
+        return with all peer devices in this group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onSelfJoin(in DeviceInfo[]
+          devices);<br>
+          &nbsp;&nbsp;&nbsp; </b>//i just finished leaving a group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onSelfLeave();<br>
+          &nbsp;&nbsp;&nbsp; </b>//results of calling getPeerDevices:
+        return all devices in this group<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onGetPeerDevices(in
+          DeviceInfo[] devices);<br>
+          &nbsp;&nbsp;&nbsp; </b>//something wrong during group
+        communication<br>
+        <b> &nbsp;&nbsp;&nbsp; oneway void onError(in String errInfo);<br>
+          }</b><br>
+      </div>
+      <br>
+      Please check this <a
+href="https://github.com/yigongliu/PeerDeviceNet_Chat/blob/master/src/com/xconns/samples/chat/ChatByAidlActivity.java">Chat
+
+
+
+
+
+
+
+
+
+        app</a> for using IDL interfaces.<br>
+    </div>
+    <ol start="3">
+      <li>Messenger api<br>
+      </li>
+    </ol>
+    <p style="margin-left: 40px;">Apps using Android standard messaging
+      pattern "Messenger" will bind to the following named service:<br>
+    </p>
+    <p style="margin-left: 80px;">ACTION_MESSENGER_SERVICE =
+      "com.xconns.peerdevicenet.Messenger"<br>
+    </p>
+    <p style="margin-left: 40px;">Once bound, a messenger will be
+      returned which can be used to send Message objects with the
+      following message ids:<br>
+    </p>
+    <p style="margin-left: 80px;">public final static int JOIN_GROUP =
+      -10400;<br>
+      public final static int LEAVE_GROUP = -10401;<br>
+      public final static int SEND_MSG = -10500;</p>
+    <p style="margin-left: 40px;">When joining group, apps will register
+      a callback messenger to receive remote messages and group
+      membership change events with the following message ids:<br>
+    </p>
+    <p style="margin-left: 80px;">public final static int RECV_MSG =
+      -10510;<br>
+      public final static int SELF_JOIN = -10410;<br>
+      public final static int PEER_JOIN = -10411;<br>
+      public final static int SELF_LEAVE = -10412;<br>
+      public final static int PEER_LEAVE = -10413;<br>
+    </p>
+    <p style="margin-left: 40px;">App message data are packaged as a
+      bundle using the same key names as Intent api.</p>
+    <p style="margin-left: 40px;">Please check this <a
+href="https://github.com/yigongliu/PeerDeviceNet_Chat/blob/master/src/com/xconns/samples/chat/ChatByMessengerActivity.java">Chat
+
+
+
+
+
+
+
+
+        app</a> for using messenger api.<br>
+    </p>
+    <p style="margin-left: 40px;">The complete source code project for
+      Chat apps is available from <a
+        href="https://github.com/yigongliu/PeerDeviceNet_Chat">here</a>.
+      The built app can be installed <a
+href="https://play.google.com/store/apps/details?id=com.xconns.samples.chat">from
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Google play to try out</a>.<br>
+    </p>
+    <p style="margin-left: 40px;"> </p>
+  </body>
+</html>

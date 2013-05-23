@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*
+ * Copyright (C) 2013 Yigong Liu, XCONNS, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+  -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xconns.peerdevicenet.core"
+    android:versionCode="40"
+    android:versionName="1.1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <permission-group
+        android:name="com.xconns.peerdevicenet.permission-group.REMOTE_MESSAGING"
+        android:description="@string/permdesc_rmt_msg"
+        android:icon="@drawable/router_icon"
+        android:label="@string/rmt_msg" />
+
+    <permission
+        android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+        android:description="@string/permdesc_rmt_msg"
+        android:icon="@drawable/router_icon"
+        android:label="@string/rmt_msg"
+        android:permissionGroup="com.xconns.peerdevicenet.permission-group.REMOTE_MESSAGING"
+        android:protectionLevel="normal" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING" />
+
+    <!-- QRCode scanner related -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <!-- Don't require camera, as this requires a rear camera. This allows it to work on the Nexus 7 -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <!-- TODO replace above two with next line after Android 4.2 -->
+    <!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.screen.landscape" />
+    
+    
+    <application
+        android:icon="@drawable/router_icon"
+        android:label="@string/app_name" >
+        <activity
+            android:name="com.xconns.peerdevicenet.cm.PreferenceLauncher"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.CONNECTION_MANAGEMENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.cm.ConnectionManagerActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.cm.ConnectionManagerDualPane"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+        </activity>
+
+        <service
+            android:name="com.xconns.peerdevicenet.cm.ConnectionManagerService"
+            android:enabled="true" >
+        </service>
+
+        <activity
+            android:name="com.xconns.peerdevicenet.ctor.ConnectorActivity"
+            android:label="@string/title_activity_ctor"
+            android:theme="@android:style/Theme.Dialog" >
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.CONNECTOR" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+		<activity
+            android:name="com.google.zxing.client.android.DecoderActivity"
+            android:clearTaskOnLaunch="true"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:stateNotNeeded="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.DECODE_QRCODE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.xconns.peerdevicenet.apps.FingerPaint"
+            android:enabled="true"
+            android:excludeFromRecents="true" >
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.apps.TouchRotateActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:enabled="true"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Translucent" >
+        </activity>
+
+        <!-- let RouterService run in its own process -->
+        <service
+            android:name="com.xconns.peerdevicenet.core.RouterService"
+            android:enabled="true"
+            android:permission="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+            android:process=":RouterService" >
+            <intent-filter>
+
+                <!--
+                     This is an action code you can use to select the service
+                     without explicitly supplying the implementation class.
+                -->
+                <action android:name="com.xconns.peerdevicenet.Service" />
+                <!-- life cycle -->
+                <action android:name="com.xconns.peerdevicenet.Startup" />
+                <action android:name="com.xconns.peerdevicenet.Reset" />
+                <action android:name="com.xconns.peerdevicenet.Shutdown" />
+                <!--
+                     These are the IDL interfaces supported by the service, which
+                     you can bind to.
+                -->
+                <action android:name="com.xconns.peerdevicenet.ConnectionService" />
+                <action android:name="com.xconns.peerdevicenet.GroupService" />
+                <action android:name="com.xconns.peerdevicenet.Messenger" />
+                <!-- The following are intenting api -->
+                <action android:name="com.xconns.peerdevicenet.CONNECT" />
+                <action android:name="com.xconns.peerdevicenet.DISCONNECT" />
+                <action android:name="com.xconns.peerdevicenet.JOIN_GROUP" />
+                <action android:name="com.xconns.peerdevicenet.LEAVE_GROUP" />
+                <action android:name="com.xconns.peerdevicenet.SEND_MSG" />
+                <action android:name="com.xconns.peerdevicenet.SET_DEVICE_INFO" />
+                <action android:name="com.xconns.peerdevicenet.GET_DEVICE_INFO" />
+                <action android:name="com.xconns.peerdevicenet.GET_CONNECTED_PEERS" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

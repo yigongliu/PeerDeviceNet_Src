@@ -1,0 +1,149 @@
+com.google.zxing.BarcodeFormat: com.google.zxing.BarcodeFormat[] values()
+com.google.zxing.BarcodeFormat: com.google.zxing.BarcodeFormat valueOf(java.lang.String)
+com.google.zxing.DecodeHintType: com.google.zxing.DecodeHintType[] values()
+com.google.zxing.DecodeHintType: com.google.zxing.DecodeHintType valueOf(java.lang.String)
+com.google.zxing.EncodeHintType: com.google.zxing.EncodeHintType[] values()
+com.google.zxing.EncodeHintType: com.google.zxing.EncodeHintType valueOf(java.lang.String)
+com.google.zxing.ResultMetadataType: com.google.zxing.ResultMetadataType[] values()
+com.google.zxing.ResultMetadataType: com.google.zxing.ResultMetadataType valueOf(java.lang.String)
+com.google.zxing.aztec.decoder.Decoder$Table: com.google.zxing.aztec.decoder.Decoder$Table[] values()
+com.google.zxing.aztec.decoder.Decoder$Table: com.google.zxing.aztec.decoder.Decoder$Table valueOf(java.lang.String)
+com.google.zxing.client.android.DecoderActivity
+com.google.zxing.client.android.DecoderActivity: DecoderActivity()
+com.google.zxing.client.android.DecoderActivityHandler$State: com.google.zxing.client.android.DecoderActivityHandler$State[] values()
+com.google.zxing.client.android.DecoderActivityHandler$State: com.google.zxing.client.android.DecoderActivityHandler$State valueOf(java.lang.String)
+com.google.zxing.client.android.EncoderActivity
+com.google.zxing.client.android.EncoderActivity: EncoderActivity()
+com.google.zxing.client.android.HttpHelper$ContentType: com.google.zxing.client.android.HttpHelper$ContentType[] values()
+com.google.zxing.client.android.HttpHelper$ContentType: com.google.zxing.client.android.HttpHelper$ContentType valueOf(java.lang.String)
+com.google.zxing.client.android.IntentSource: com.google.zxing.client.android.IntentSource[] values()
+com.google.zxing.client.android.IntentSource: com.google.zxing.client.android.IntentSource valueOf(java.lang.String)
+com.google.zxing.client.android.PreferencesActivity
+com.google.zxing.client.android.PreferencesActivity: PreferencesActivity()
+com.google.zxing.client.android.R$array: int country_codes
+com.google.zxing.client.android.R$array: int preferences_front_light_options
+com.google.zxing.client.android.R$array: int preferences_front_light_values
+com.google.zxing.client.android.R$color: int contents_text
+com.google.zxing.client.android.R$color: int encode_view
+com.google.zxing.client.android.R$color: int possible_result_points
+com.google.zxing.client.android.R$color: int result_minor_text
+com.google.zxing.client.android.R$color: int result_points
+com.google.zxing.client.android.R$color: int result_text
+com.google.zxing.client.android.R$color: int result_view
+com.google.zxing.client.android.R$color: int status_text
+com.google.zxing.client.android.R$color: int transparent
+com.google.zxing.client.android.R$color: int viewfinder_laser
+com.google.zxing.client.android.R$color: int viewfinder_mask
+com.google.zxing.client.android.R$dimen: int half_padding
+com.google.zxing.client.android.R$dimen: int standard_padding
+com.google.zxing.client.android.R$drawable: int launcher_icon
+com.google.zxing.client.android.R$drawable: int share_via_barcode
+com.google.zxing.client.android.R$drawable: int shopper_icon
+com.google.zxing.client.android.R$id: int barcode_image_view
+com.google.zxing.client.android.R$id: int contents_supplement_text_view
+com.google.zxing.client.android.R$id: int contents_text_view
+com.google.zxing.client.android.R$id: int decode
+com.google.zxing.client.android.R$id: int decode_failed
+com.google.zxing.client.android.R$id: int decode_succeeded
+com.google.zxing.client.android.R$id: int encode_btn
+com.google.zxing.client.android.R$id: int encode_view
+com.google.zxing.client.android.R$id: int format_text_view
+com.google.zxing.client.android.R$id: int image_view
+com.google.zxing.client.android.R$id: int launch_product_query
+com.google.zxing.client.android.R$id: int meta_text_view
+com.google.zxing.client.android.R$id: int meta_text_view_label
+com.google.zxing.client.android.R$id: int preview_view
+com.google.zxing.client.android.R$id: int quit
+com.google.zxing.client.android.R$id: int restart_preview
+com.google.zxing.client.android.R$id: int result_button_view
+com.google.zxing.client.android.R$id: int result_view
+com.google.zxing.client.android.R$id: int return_scan_result
+com.google.zxing.client.android.R$id: int status_view
+com.google.zxing.client.android.R$id: int time_text_view
+com.google.zxing.client.android.R$id: int type_text_view
+com.google.zxing.client.android.R$id: int viewfinder_view
+com.google.zxing.client.android.R$layout: int capture
+com.google.zxing.client.android.R$layout: int decoder
+com.google.zxing.client.android.R$layout: int encoder
+com.google.zxing.client.android.R$raw: int beep
+com.google.zxing.client.android.R$string: int app_name
+com.google.zxing.client.android.R$string: int button_back
+com.google.zxing.client.android.R$string: int button_cancel
+com.google.zxing.client.android.R$string: int button_done
+com.google.zxing.client.android.R$string: int button_get_directions
+com.google.zxing.client.android.R$string: int button_ok
+com.google.zxing.client.android.R$string: int button_open_browser
+com.google.zxing.client.android.R$string: int msg_camera_framework_bug
+com.google.zxing.client.android.R$string: int msg_default_format
+com.google.zxing.client.android.R$string: int msg_default_meta
+com.google.zxing.client.android.R$string: int msg_default_mms_subject
+com.google.zxing.client.android.R$string: int msg_default_status
+com.google.zxing.client.android.R$string: int msg_default_time
+com.google.zxing.client.android.R$string: int msg_default_type
+com.google.zxing.client.android.R$string: int msg_encode_contents_failed
+com.google.zxing.client.android.R$string: int msg_intent_failed
+com.google.zxing.client.android.R$string: int msg_redirect
+com.google.zxing.client.android.R$string: int msg_sure
+com.google.zxing.client.android.R$string: int msg_unmount_usb
+com.google.zxing.client.android.R$string: int preferences_actions_title
+com.google.zxing.client.android.R$string: int preferences_auto_focus_title
+com.google.zxing.client.android.R$string: int preferences_bulk_mode_summary
+com.google.zxing.client.android.R$string: int preferences_bulk_mode_title
+com.google.zxing.client.android.R$string: int preferences_copy_to_clipboard_title
+com.google.zxing.client.android.R$string: int preferences_custom_product_search_summary
+com.google.zxing.client.android.R$string: int preferences_custom_product_search_title
+com.google.zxing.client.android.R$string: int preferences_decode_1D_title
+com.google.zxing.client.android.R$string: int preferences_decode_Data_Matrix_title
+com.google.zxing.client.android.R$string: int preferences_decode_QR_title
+com.google.zxing.client.android.R$string: int preferences_device_bug_workarounds_title
+com.google.zxing.client.android.R$string: int preferences_disable_continuous_focus_summary
+com.google.zxing.client.android.R$string: int preferences_disable_continuous_focus_title
+com.google.zxing.client.android.R$string: int preferences_disable_exposure_title
+com.google.zxing.client.android.R$string: int preferences_front_light_auto
+com.google.zxing.client.android.R$string: int preferences_front_light_off
+com.google.zxing.client.android.R$string: int preferences_front_light_on
+com.google.zxing.client.android.R$string: int preferences_front_light_summary
+com.google.zxing.client.android.R$string: int preferences_front_light_title
+com.google.zxing.client.android.R$string: int preferences_general_title
+com.google.zxing.client.android.R$string: int preferences_name
+com.google.zxing.client.android.R$string: int preferences_play_beep_title
+com.google.zxing.client.android.R$string: int preferences_remember_duplicates_summary
+com.google.zxing.client.android.R$string: int preferences_remember_duplicates_title
+com.google.zxing.client.android.R$string: int preferences_result_title
+com.google.zxing.client.android.R$string: int preferences_scanning_title
+com.google.zxing.client.android.R$string: int preferences_search_country
+com.google.zxing.client.android.R$string: int preferences_supplemental_summary
+com.google.zxing.client.android.R$string: int preferences_supplemental_title
+com.google.zxing.client.android.R$string: int preferences_try_bsplus
+com.google.zxing.client.android.R$string: int preferences_try_bsplus_summary
+com.google.zxing.client.android.R$string: int preferences_vibrate_title
+com.google.zxing.client.android.R$xml: int preferences
+com.google.zxing.client.android.ViewfinderView
+com.google.zxing.client.android.ViewfinderView: ViewfinderView(android.content.Context,android.util.AttributeSet)
+com.google.zxing.client.android.ViewfinderView: void setCameraManager(com.google.zxing.client.android.camera.CameraManager)
+com.google.zxing.client.android.camera.FrontLightMode: com.google.zxing.client.android.camera.FrontLightMode[] values()
+com.google.zxing.client.android.camera.FrontLightMode: com.google.zxing.client.android.camera.FrontLightMode valueOf(java.lang.String)
+com.google.zxing.client.android.camera.open.DefaultOpenCameraInterface
+com.google.zxing.client.android.camera.open.GingerbreadOpenCameraInterface
+com.google.zxing.client.android.camera.open.OpenCameraInterface
+com.google.zxing.client.android.camera.open.OpenCameraManager
+com.google.zxing.client.android.common.executor.AsyncTaskExecInterface
+com.google.zxing.client.android.common.executor.AsyncTaskExecManager
+com.google.zxing.client.android.common.executor.DefaultAsyncTaskExecInterface
+com.google.zxing.client.android.common.executor.HoneycombAsyncTaskExecInterface
+com.google.zxing.client.result.ParsedResultType: com.google.zxing.client.result.ParsedResultType[] values()
+com.google.zxing.client.result.ParsedResultType: com.google.zxing.client.result.ParsedResultType valueOf(java.lang.String)
+com.google.zxing.common.CharacterSetECI: com.google.zxing.common.CharacterSetECI[] values()
+com.google.zxing.common.CharacterSetECI: com.google.zxing.common.CharacterSetECI valueOf(java.lang.String)
+com.google.zxing.datamatrix.decoder.DecodedBitStreamParser$Mode: com.google.zxing.datamatrix.decoder.DecodedBitStreamParser$Mode[] values()
+com.google.zxing.datamatrix.decoder.DecodedBitStreamParser$Mode: com.google.zxing.datamatrix.decoder.DecodedBitStreamParser$Mode valueOf(java.lang.String)
+com.google.zxing.oned.rss.expanded.decoders.CurrentParsingState$State: com.google.zxing.oned.rss.expanded.decoders.CurrentParsingState$State[] values()
+com.google.zxing.oned.rss.expanded.decoders.CurrentParsingState$State: com.google.zxing.oned.rss.expanded.decoders.CurrentParsingState$State valueOf(java.lang.String)
+com.google.zxing.pdf417.decoder.DecodedBitStreamParser$Mode: com.google.zxing.pdf417.decoder.DecodedBitStreamParser$Mode[] values()
+com.google.zxing.pdf417.decoder.DecodedBitStreamParser$Mode: com.google.zxing.pdf417.decoder.DecodedBitStreamParser$Mode valueOf(java.lang.String)
+com.google.zxing.pdf417.encoder.Compaction: com.google.zxing.pdf417.encoder.Compaction[] values()
+com.google.zxing.pdf417.encoder.Compaction: com.google.zxing.pdf417.encoder.Compaction valueOf(java.lang.String)
+com.google.zxing.qrcode.decoder.ErrorCorrectionLevel: com.google.zxing.qrcode.decoder.ErrorCorrectionLevel[] values()
+com.google.zxing.qrcode.decoder.ErrorCorrectionLevel: com.google.zxing.qrcode.decoder.ErrorCorrectionLevel valueOf(java.lang.String)
+com.google.zxing.qrcode.decoder.Mode: com.google.zxing.qrcode.decoder.Mode[] values()
+com.google.zxing.qrcode.decoder.Mode: com.google.zxing.qrcode.decoder.Mode valueOf(java.lang.String)

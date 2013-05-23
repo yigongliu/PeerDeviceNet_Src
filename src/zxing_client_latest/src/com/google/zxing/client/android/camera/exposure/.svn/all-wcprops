@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/2382/trunk/android/src/com/google/zxing/client/android/camera/exposure
+END
+ExposureManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/2382/trunk/android/src/com/google/zxing/client/android/camera/exposure/ExposureManager.java
+END
+FroyoExposureInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/2382/trunk/android/src/com/google/zxing/client/android/camera/exposure/FroyoExposureInterface.java
+END
+ExposureInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/2382/trunk/android/src/com/google/zxing/client/android/camera/exposure/ExposureInterface.java
+END
+DefaultExposureInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/!svn/ver/2382/trunk/android/src/com/google/zxing/client/android/camera/exposure/DefaultExposureInterface.java
+END

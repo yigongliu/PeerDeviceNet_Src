@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/startup_choice" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RadioGroup
+            android:id="@+id/startup_choice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checkedButton="@+id/conn_mgr"
+            android:orientation="vertical" >
+
+            <RadioButton
+                android:id="@+id/conn_mgr"
+                android:text="@string/conn_mgr" />
+
+            <RadioButton
+                android:id="@+id/chat_intenting"
+                android:text="@string/chat_intenting" />
+
+            <RadioButton
+                android:id="@+id/chat_messenger"
+                android:text="@string/chat_messenger" />
+
+            <RadioButton
+                android:id="@+id/chat_aidl"
+                android:text="@string/chat_aidl" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/button_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/startup" />
+        
+    </LinearLayout>
+
+</LinearLayout>

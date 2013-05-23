@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>PeerDeviceNet - Developer Tutorials</title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <table bgcolor="#ccccff" border="0" cellpadding="2"
+        cellspacing="2" width="100%">
+        <tbody>
+          <tr>
+            <td align="right" valign="middle" width="45%"><img style="
+                width: 72px; height: 72px;" alt="PeerDeviceNet"
+                src="router72.png"><br>
+            </td>
+            <td align="left" valign="middle">
+              <h2>Tutorials<br>
+              </h2>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table style=" text-align: left; width: 100%; background-color:
+      rgb(204, 255, 255);" border="0" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style=" text-align: center; vertical-align: middle;
+            background-color: rgb(204, 255, 255);"><a href="index.html">Home</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="features.html">Features</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="install.html">Install</a> &nbsp;
+            |&nbsp;&nbsp; <a href="user_guide.html">User guide</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Developer API&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="contact.html">Contact</a></td>
+        </tr>
+        <tr align="center">
+          <td style="vertical-align: top; background-color: rgb(204,
+            255, 255);"><a href="api.html">Introduction</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="rmt_intent.html">Remote intenting</a>&nbsp;&nbsp;
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="grp_comm.html">Group communication</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="dev_conn.html">Device connection</a>&nbsp;&nbsp;
+
+
+
+
+            |&nbsp;&nbsp; Tutorials </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The following are simple descriptions of some sample apps which
+    demonstrate how to use PeerDeviceNet APIs to create connected mobile
+    apps. The source code projects of these sample apps are hosted at
+    github. Please follow the links to download them.<br>
+    <ol>
+      <li>Chat (<a
+          href="https://github.com/yigongliu/PeerDeviceNet_Chat">github
+          project</a>)<br>
+      </li>
+    </ol>
+    <blockquote>This app demonstrates how to use PeerDeviceNet group
+      communication APIs to implement a simple chat app which connect
+      peer chatters directly without going thru a central server. <br>
+      PeerDeviceNet provides three kinds of APIs and this app has a
+      separate chat implementation for each API:<br>
+      <ul>
+        <li>Intenting API: ChatByIntentingActivity.java</li>
+        <li>Messenger API: ChatByMessengerActivity.java</li>
+        <li>IDL API: ChatByAidlActivity.java</li>
+      </ul>
+      ChatActivity.java defines a main menu to allow you choose a
+      specific chat implementation; and allow you start PeerDeviceNet
+      connection manager to connect your devices.<br>
+      <p>All three chat implementations will talk to each other.<br>
+        The README file at github project web site provides more
+        detailed description.<br>
+      </p>
+    </blockquote>
+    <ol start="2">
+      <li>Remote Intents (<a
+          href="https://github.com/yigongliu/PeerDeviceNet_RemoteIntentActivity">github
+
+          project</a>)</li>
+    </ol>
+    <blockquote>This app demonstrates how to use PeerDeviceNet to send
+      remote intents to connected devices. PeerDeviceNet provides both
+      "intenting" API and IDL API for sending remote intents. This app
+      uses "intenting" API.<br>
+      This app provides GUI to allow you interactively define intents
+      (intent action and data URI) to be sent. You choose intent actions
+      from a drop down list;&nbsp; and enter the data URI either
+      directly in a text box or pick a picture or video from Gallery and
+      use its content uri. When a media file is chosen, PeerDeviceNet
+      will automatically stream the data to destination devices.<br>
+      PeerDeviceNet GUI can be reused to choose destination devices. <br>
+      The README file at github project web site provides more detailed
+      description.<br>
+    </blockquote>
+    <ol start="3">
+      <li>Rotate with peers (<a
+          href="https://github.com/yigongliu/PeerDeviceNet_RotateWithPeers">github
+
+          project</a>)</li>
+    </ol>
+    <blockquote>This sample is a slight change of android SDK example
+      TouchRotateActivity.&nbsp; The original TouchRotateActivity allows
+      you rotate a 3D cube thru touch screen.&nbsp; This sample add
+      PeerDeviceNet group communication to allow several android devices
+      rotate the cube together, a simple demo of multi-player GUI
+      applications.<br>
+      Group communication is used here to sync the state of this app at
+      connected peer devices. There are two syncing here:<br>
+      <ol>
+        <li>when a device joins the group, it will send a message
+          requesting the rotation "state" of peers already in the group;
+          after receiving responses, it will start its rotation from
+          that state.</li>
+        <li>when the user of a device rotates the cube, the app will
+          broadcast the rotation changes to all connected peers and
+          peers will change its cube's orientation accordingly.</li>
+      </ol>
+      Users can be actively rotating cubes at multiple devices
+      simultaneously and apps will broadcast rotation values to each
+      other continuously so all apps/devices will keep synced up.<br>
+      The README file at github project web site provides more detailed
+      description.<br>
+      <br>
+      <br>
+      <br>
+    </blockquote>
+  </body>
+</html>

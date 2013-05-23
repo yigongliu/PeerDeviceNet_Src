@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">友机互联网</string>
+    <string name="router_notif_ticker">友机互联网服务启动</string>
+    <string name="router_notif_title">友机互联网服务</string>
+    <string name="router_notif_message">连接附近的设备</string>
+    <string name="rmt_msg">远程通信</string>
+    <string name="permdesc_rmt_msg">允许其他应用程序发送远程消息到相连接的设备</string>
+    
+</resources>

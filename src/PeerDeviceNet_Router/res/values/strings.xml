@@ -1,0 +1,10 @@
+<resources>
+
+    <string name="app_name">PeerDeviceNet_Router</string>
+    <string name="router_notif_ticker">PeerDeviceNet service starts</string>
+    <string name="router_notif_title">PeerDeviceNet service</string>
+    <string name="router_notif_message">Touch to connect peer devices</string>
+    <string name="rmt_msg">Remote communication</string>
+    <string name="permdesc_rmt_msg">Allow other applications to send remote messages to peer devices</string>
+    
+</resources>

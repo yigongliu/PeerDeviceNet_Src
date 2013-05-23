@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">友機互聯網</string>
+    <string name="router_notif_ticker">友機互聯網服務啟動</string>
+    <string name="router_notif_title">友機互聯網服務</string>
+    <string name="router_notif_message">連接附近的設備</string>
+    <string name="rmt_msg">遠程通信</string>
+    <string name="permdesc_rmt_msg">允許其他應用程序發送遠程消息到相連接的設備</string>
+    
+</resources>

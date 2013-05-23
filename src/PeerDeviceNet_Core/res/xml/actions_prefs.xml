@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+/*
+ * Copyright (C) 2013 Yigong Liu, XCONNS, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+  -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/cleanup_shutdown" >
+    
+    <PreferenceCategory android:title="@string/tests" >
+        <Preference
+            android:key="rot_cube"
+            android:title="@string/rot_cube" />
+        <Preference
+            android:key="paint"
+            android:title="@string/paint" />
+        </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/actions" >
+        <Preference
+            android:key="cleanup"
+            android:summary="@string/cleanup_detail"
+            android:title="@string/cleanup_title" />
+        <Preference
+            android:key="shutdown"
+            android:summary="@string/shutdown_detail"
+            android:title="@string/shutdown_title" />
+        </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/license_tutorial" >
+        <Preference
+            android:key="tutorial"
+            android:title="@string/tutorial" />
+        <Preference
+            android:key="license"
+            android:title="@string/license" />
+        </PreferenceCategory>
+    
+</PreferenceScreen>

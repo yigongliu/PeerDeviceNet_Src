@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/2400/trunk/android/res/layout
+END
+history_list_item.xml
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/2400/trunk/android/res/layout/history_list_item.xml
+END
+bookmark_picker_list_item.xml
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/2400/trunk/android/res/layout/bookmark_picker_list_item.xml
+END
+search_book_contents.xml
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/2399/trunk/android/res/layout/search_book_contents.xml
+END
+encode.xml
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/2400/trunk/android/res/layout/encode.xml
+END
+share.xml
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/2400/trunk/android/res/layout/share.xml
+END
+capture.xml
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/2400/trunk/android/res/layout/capture.xml
+END
+search_book_contents_header.xml
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/2400/trunk/android/res/layout/search_book_contents_header.xml
+END
+search_book_contents_list_item.xml
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/2400/trunk/android/res/layout/search_book_contents_list_item.xml
+END
+help.xml
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/2400/trunk/android/res/layout/help.xml
+END

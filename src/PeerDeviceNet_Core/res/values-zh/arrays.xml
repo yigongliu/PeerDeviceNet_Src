@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+        <!--  -->
+    <string-array name="config_nets_entries">
+        <item>设置新网络</item>
+    </string-array>
+        
+    <string-array name="config_nets_values">
+        <item>设置新网络</item>
+    </string-array>
+    
+    <!--  -->
+    <string-array name="max_sessions_entries">
+        <item>3</item>
+        <item>6</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+    </string-array>
+    
+    <string-array name="max_sessions_values">
+        <item>3</item>
+        <item>6</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+    </string-array>
+    
+    <string-array name="conn_timeout_entries">
+        <item>5 秒</item>
+        <item>10 秒</item>
+        <item>15 秒</item>
+        <item>20 秒</item>
+        <item>30 秒</item>
+        <item>40 秒</item>
+        <item>50 秒</item>
+        <item>60 秒</item>
+    </string-array>
+    
+    <string-array name="conn_timeout_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </string-array>
+    
+    <string-array name="live_timeout_entries">
+        <item>3 秒</item>
+        <item>4 秒</item>
+        <item>5 秒</item>
+        <item>6 秒</item>
+        <item>7 秒</item>
+        <item>8 秒</item>
+        <item>9 秒</item>
+        <item>10 秒</item>
+    </string-array>
+    
+    <string-array name="live_timeout_values">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    
+    <string-array name="search_timeout_entries">
+        <item>15 秒</item>
+        <item>20 秒</item>
+        <item>30 秒</item>
+        <item>40 秒</item>
+        <item>50 秒</item>
+        <item>60 秒</item>
+        <item>90 秒</item>
+        <item>120 秒</item>
+        <item>180 秒</item>
+        </string-array>
+    
+    <string-array name="search_timeout_values">
+        <item>15</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+        <item>180</item>
+        </string-array>
+    
+</resources>

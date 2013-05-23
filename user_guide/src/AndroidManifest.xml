@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xconns.free.peerdevicenet"
+    android:versionCode="5"
+    android:versionName="1.0.2" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <permission-group
+        android:name="com.xconns.peerdevicenet.permission-group.REMOTE_MESSAGING"
+        android:description="@string/permdesc_rmt_msg"
+        android:icon="@drawable/router_icon"
+        android:label="@string/rmt_msg" />
+
+    <permission
+        android:name="com.xconns.peerdevicenet.permission.REMOTE_INTENT"
+        android:description="@string/permdesc_rmt_intent"
+        android:icon="@drawable/router_icon"
+        android:label="@string/rmt_intent"
+        android:permissionGroup="com.xconns.peerdevicenet.permission-group.REMOTE_MESSAGING"
+        android:protectionLevel="normal" />
+    <permission
+        android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+        android:description="@string/permdesc_rmt_msg"
+        android:icon="@drawable/router_icon"
+        android:label="@string/rmt_msg"
+        android:permissionGroup="com.xconns.peerdevicenet.permission-group.REMOTE_MESSAGING"
+        android:protectionLevel="normal" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="com.xconns.peerdevicenet.permission.REMOTE_INTENT" />
+    <uses-permission android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING" />
+
+    <application
+        android:icon="@drawable/router_icon"
+        android:label="@string/app_name" >
+        <activity
+            android:name="com.xconns.peerdevicenet.PreferenceLauncher"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.CONNECTION_MANAGEMENT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.ConnectionManagerActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.ConnectionManagerDualPane"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
+        </activity>
+
+        <service
+            android:name="com.xconns.peerdevicenet.ConnectionManagerService"
+            android:enabled="true" >
+        </service>
+
+        <activity
+            android:name="com.xconns.peerdevicenet.LoseWifiActivity"
+            android:enabled="true"
+            android:excludeFromRecents="true" >
+        </activity>
+        <activity
+            android:name="com.xconns.peerdevicenet.apps.RemoteIntentActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Dialog" >
+
+            <!-- for user defined remote intents: remote activities & remote services -->
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.START_REMOTE_ACTIVITY" />
+                <action android:name="com.xconns.peerdevicenet.START_REMOTE_SERVICE" />
+                <action android:name="com.xconns.peerdevicenet.SEND_REMOTE_BROADCAST" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- filter for intents containing only actions -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- filter for intents containing URIs but not data types -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="about" />
+                <data android:scheme="javascript" />
+                <data android:scheme="tel" />
+                <data android:scheme="mailto" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="inline" />
+                <data android:mimeType="text/html" />
+                <data android:mimeType="text/plain" />
+                <data android:mimeType="application/xhtml+xml" />
+                <data android:mimeType="application/vnd.wap.xhtml+xml" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <!-- filter for intents containing data types but not URIs -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <data android:mimeType="text/*" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="image/*" />
+                <data android:mimeType="application/*" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- filter for intents containing data types and URIs -->
+            <!--
+                 Note: by intent matching rules, URI scheme "content:" and "file:" are
+            	automatically supported in the above filter without needing to be listed explicitly
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <data
+                    android:mimeType="text/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="audio/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="video/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="image/*"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="application/*"
+                    android:scheme="http" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.xconns.peerdevicenet.apps.RemoteIntentService"
+            android:enabled="true"
+            android:permission="com.xconns.peerdevicenet.permission.REMOTE_INTENT" >
+            <intent-filter>
+                <action android:name="com.xconns.peerdevicenet.RemoteIntentService" />
+            </intent-filter>
+        </service>
+
+        <!-- let RouterService run in its own process -->
+        <service
+            android:name="com.xconns.peerdevicenet.RouterService"
+            android:enabled="true"
+            android:permission="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+            android:process=":RouterService" >
+            <intent-filter>
+
+                <!--
+                     This is an action code you can use to select the service
+                     without explicitly supplying the implementation class.
+                -->
+                <action android:name="com.xconns.peerdevicenet.Service" />
+                <!--
+                     These are the IDL interfaces supported by the service, which
+                     you can bind to.
+                -->
+                <action android:name="com.xconns.peerdevicenet.ConnectionService" />
+                <action android:name="com.xconns.peerdevicenet.GroupService" />
+                <action android:name="com.xconns.peerdevicenet.Messenger" />
+                <!-- The following are intenting api -->
+                <action android:name="com.xconns.peerdevicenet.CONNECT" />
+                <action android:name="com.xconns.peerdevicenet.DISCONNECT" />
+                <action android:name="com.xconns.peerdevicenet.JOIN_GROUP" />
+                <action android:name="com.xconns.peerdevicenet.LEAVE_GROUP" />
+                <action android:name="com.xconns.peerdevicenet.SEND_MSG" />
+                <action android:name="com.xconns.peerdevicenet.SET_DEVICE_INFO" />
+                <action android:name="com.xconns.peerdevicenet.GET_DEVICE_INFO" />
+                <action android:name="com.xconns.peerdevicenet.GET_CONNECTED_PEERS" />
+            </intent-filter>
+        </service>
+
+        <!-- Mobclix Required Parameter -->
+        <meta-data
+            android:name="com.mobclix.APPLICATION_ID"
+            android:value="5dc24604-01f7-49d9-b358-959a8250a186" />
+
+        <activity
+            android:name="com.mobclix.android.sdk.MobclixBrowserActivity"
+            android:hardwareAccelerated="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- AdMob settings -->
+        <activity
+            android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+    </application>
+
+</manifest>

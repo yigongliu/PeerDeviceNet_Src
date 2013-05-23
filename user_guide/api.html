@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>PeerDeviceNet - Developer API</title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <table bgcolor="#ccccff" border="0" cellpadding="2"
+        cellspacing="2" width="100%">
+        <tbody>
+          <tr>
+            <td align="right" valign="middle" width="45%"><img style="
+                width: 72px; height: 72px;" alt="PeerDeviceNet"
+                src="router72.png"><br>
+            </td>
+            <td align="left" valign="middle">
+              <h2>Developer API</h2>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table style=" text-align: left; width: 100%; background-color:
+      rgb(204, 255, 255);" border="0" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style=" text-align: center; vertical-align: middle;
+            background-color: rgb(204, 255, 255);"><a href="index.html">Home</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="features.html">Features</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="install.html">Install</a> &nbsp;
+            |&nbsp;&nbsp; <a href="user_guide.html">User guide</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Developer API&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="contact.html">Contact</a></td>
+        </tr>
+        <tr align="center">
+          <td style="vertical-align: top; background-color: rgb(204,
+            255, 255);">Introduction&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="rmt_intent.html">Remote intenting</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="grp_comm.html">Group communication</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="dev_conn.html">Device connection</a>&nbsp;&nbsp;
+
+
+
+            |&nbsp;&nbsp; <a href="tutorials.html">Tutorials</a> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    As developers, we find mobile platforms (Android, iOS, Win8) are
+    different from traditional platforms (desktops, servers). <br>
+    <ul>
+      <li>Apps are developed as components glued together thru high
+        level communication / integration mechanisms (intents, custom
+        urls, contracts), which enables ad-hoc reuse and composition of
+        features from different apps. </li>
+      <li>Cross components API are mostly asynchronous for the
+        responsiveness of apps. </li>
+      <li>Many issues become prominent in mobile environments such as
+        power conservation, permissions to access device features,
+        network connectivity, etc..</li>
+    </ul>
+    PeerDeviceNet internal design and developer API are native to the
+    mobile programming model. Its simple intent API allows adding remote
+    messaging to apps without any library "gluing"; while its IDL
+    interfaces allow apps fine grained control of messaging and
+    connection.<br>
+    <br>
+    PeerDeviceNet api exposes the following three functional modules to
+    support connected mobile apps:<br>
+    <ol>
+      <li><a href="rmt_intent.html">Remote intenting</a>. intents and
+        api to enable remote start of activities and services at peer
+        devices, send remote broadcasts.<br>
+      </li>
+      <li><a href="grp_comm.html">Group communication</a>. intents and
+        api to do messaging in simple multicast groups.<br>
+      </li>
+      <li><a href="dev_conn.html">Device connection</a>. intents and api
+        for peer device connection setup.<br>
+      </li>
+    </ol>
+    Each modules are normally supported in three levels of APIs:<br>
+    <ol>
+      <li>Intent api.&nbsp; <br>
+      </li>
+    </ol>
+    <div style="margin-left: 40px;">Intent API provides the highest
+      level of access to PeerDeviceNet's features. To use this API, all
+      you need is to have PeerDeviceNet (paid or free) installed on
+      users devices to gain the runtime support. Apps send normal
+      android intents using PeerDeviceNet specific action names and pack
+      message data as intent "extra" data items with PeerDeviceNet
+      specific keys. All the action names and "extra" data keys
+      supported by PeerDeviceNet have been centralized at this file <a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/Router.java">Router.java</a>
+      which you can add to your project for easy access.</div>
+    <ol start="2">
+      <li>IDL api.</li>
+    </ol>
+    <div style="margin-left: 40px;">PeerDeviceNet's IDL APIs define
+      purely asynchronous methods and callbacks. To use these apis, you
+      need to add their aidl definition files to your project. There is
+      also DeviceInfo class and NetInfo class used at api which defines
+      information about devices and networks. For your convenience, all
+      the necessary files to use aidl api are available from <a
+        href="https://github.com/yigongliu/PeerDeviceNet_API">github
+        site</a>, which you can unzip and add to your project.<br>
+    </div>
+    <ol start="3">
+      <li>Messenger api.</li>
+    </ol>
+    <div style="margin-left: 40px;">Messenger API is also a high level
+      api for apps using android's standard messaging pattern
+      "Messenger". This api defines a group of PeerDeviceNet specific
+      message ids which can be used with android's Message object. Apps
+      use messengers to send message data as a bundle with data items
+      using the same key names as Intent api. All the message ids and
+      bundle data keys are defined in <a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/Router.java">Router.java</a>.<br>
+    </div>
+  </body>
+</html>

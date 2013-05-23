@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>PeerDeviceNet - Device connection</title>
+  </head>
+  <body style="color: rgb(0, 0, 0);" alink="#EE0000" link="#0000EE"
+    vlink="#551A8B">
+    <div style="text-align: center;">
+      <table bgcolor="#ccccff" border="0" cellpadding="2"
+        cellspacing="2" width="100%">
+        <tbody>
+          <tr>
+            <td align="right" valign="middle" width="45%"><img style="
+                width: 72px; height: 72px;" alt="PeerDeviceNet"
+                src="router72.png"><br>
+            </td>
+            <td align="left" valign="middle">
+              <h2>API: Device connection<br>
+              </h2>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <table style=" text-align: left; width: 100%; background-color:
+      rgb(204, 255, 255);" border="0" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style=" text-align: center; vertical-align: middle;
+            background-color: rgb(204, 255, 255);"><a href="index.html">Home</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="features.html">Features</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="install.html">Install</a> &nbsp;
+            |&nbsp;&nbsp; <a href="user_guide.html">User guide</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Developer API&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="contact.html">Contact</a></td>
+        </tr>
+        <tr align="center">
+          <td style="vertical-align: top; background-color: rgb(204,
+            255, 255);"><a href="api.html">Introduction</a>&nbsp;&nbsp;
+            |&nbsp;&nbsp; <a href="rmt_intent.html">Remote intenting</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; <a href="grp_comm.html">Group communication</a>&nbsp;&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            |&nbsp;&nbsp; Device connection&nbsp;&nbsp; |&nbsp;&nbsp; <a
+              href="tutorials.html">Tutorials</a> </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The simple way to set up connections among peer devices is to use
+    PeerDeviceNet's connection manager, so that apps can completely
+    avoid the code for connection setup, reuse the existing component
+    and secure connection features, and focus on logical "communication
+    groups" setup.<br>
+    <p>PeerDeviceNet's connection manager supports two connection
+      strategies: </p>
+    <ul>
+      <li>Search and connect peer: use multicast to allow devices to
+        discover each other automatically and connect up automatically
+        if configured so.</li>
+      <li>Manually connect peer: if multicast fails, manually connect to
+        peers by entering their ip addresses.</li>
+      <li>Parameters are exposed to control aspects of connection setup.<br>
+      </li>
+    </ul>
+    Apps can start up PeerDeviceNet's connection manager easily with the
+    code, as in Chat sample:<br>
+    <div style="background-color: rgb(255, 255, 255);">
+      <div style="margin-left: 40px; background-color: rgb(204, 204,
+        255);">Intent intent = new
+        Intent("com.xconns.peerdevicenet.CONNECTION_MANAGEMENT");<br>
+        startActivity(intent);<br>
+      </div>
+      <br>
+      If Apps need to set up connection in its own style, it can
+      directly use the connection service api. Apps using connection api
+      should add the following permission to its AndroidManifest.xml:<br>
+      <p style="background-color: rgb(204, 204, 255);">&lt;uses-permission
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        android:name="com.xconns.peerdevicenet.permission.REMOTE_MESSAGING"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /&gt;</p>
+    </div>
+    Many api methods use the folllowing class to describe network:<br>
+    <p style="margin-left: 40px;">class NetInfo {<br>
+    </p>
+    <p style="margin-left: 80px;">public int type;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+      //Network type: WI-FI, WI-FI Direct, Bluetooth, ...<br>
+      public String name;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+      //SSID or network names<br>
+      public String pass;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp; //connection paraphrase if available<br>
+      public byte[] info;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; //other info<br>
+      public String intfName;&nbsp; //local interface name for this
+      network<br>
+      public String addr;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; //addr
+      of this device in this network<br>
+      public boolean mcast;&nbsp;&nbsp;&nbsp; //does it support
+      multicast?<br>
+      ......<br>
+    </p>
+    <p style="margin-left: 40px;">}<br>
+      Correspondingly use the following key names to pack network info
+      inside a message bundle:<br>
+"NET_TYPE","NET_NAME","NET_PASS","NET_INFO","NET_INTF_NAME","NET_ADDR","NET_INTF_MCAST".</p>
+    PeerDeviceNet exposes three kinds of connection api:<br>
+    <ol>
+      <li>Intents api</li>
+    </ol>
+    <div style="margin-left: 40px;">Apps can send startService() intents
+      with the following action names for connection setup:<br>
+      <ul>
+        <li>Intent actions related to network connection info, events
+          and setting active network:</li>
+      </ul>
+      <div style="margin-left: 40px;">ACTION_GET_NETWORKS =
+        "com.xconns.peerdevicenet.GET_NETWORKS";<br>
+        ACTION_GET_ACTIVE_NETWORK =
+        "com.xconns.peerdevicenet.GET_ACTIVE_NETWORK";<br>
+        ACTION_ACTIVATE_NETWORK =
+        "com.xconns.peerdevicenet.ACTIVATE_NETWORK";<br>
+      </div>
+      <ul>
+        <li>Intent actions for searching and finding peer devices:</li>
+      </ul>
+      <div style="margin-left: 40px;">ACTION_START_SEARCH =
+        "com.xconns.peerdevicenet.START_SEARCH"<br>
+        ACTION_STOP_SEARCH = "com.xconns.peerdevicenet.STOP_SEARCH"<br>
+      </div>
+      <ul>
+        <li>Intent actions for device connection setup:</li>
+      </ul>
+      <div style="margin-left: 40px;">ACTION_CONNECT =
+        "com.xconns.peerdevicenet.CONNECT"<br>
+        ACTION_DISCONNECT = "com.xconns.peerdevicenet.DISCONNECT"<br>
+        ACTION_ACCEPT_CONNECTION =
+        "com.xconns.peerdevicenet.ACCEPT_CONNECTION"<br>
+        ACTION_DENY_CONNECTION =
+        "com.xconns.peerdevicenet.DENY_CONNECTION"<br>
+      </div>
+      <p>Apps should register a broadcast receiver to handle the
+        following connection events:</p>
+      <p style="margin-left: 40px;">ACTION_GET_NETWORKS =
+        "com.xconns.peerdevicenet.GET_NETWORKS";<br>
+        ACTION_GET_ACTIVE_NETWORK =
+        "com.xconns.peerdevicenet.GET_ACTIVE_NETWORK";<br>
+        ACTION_ACTIVATE_NETWORK =
+        "com.xconns.peerdevicenet.ACTIVATE_NETWORK";<br>
+        ACTION_NETWORK_CONNECTED =
+        "com.xconns.peerdevicenet.NETWORK_CONNECTED";<br>
+        ACTION_NETWORK_DISCONNECTED =
+        "com.xconns.peerdevicenet.NETWORK_DISCONNECTED";<br>
+        ACTION_SEARCH_FOUND_DEVICE =
+        "com.xconns.peerdevicenet.SEARCH_FOUND_DEVICE"<br>
+        ACTION_SEARCH_COMPLETE =
+        "com.xconns.peerdevicenet.SEARCH_COMPLETE"<br>
+        ACTION_CONNECTING = "com.xconns.peerdevicenet.CONNECTING"<br>
+        ACTION_CONNECTION_FAILED =
+        "com.xconns.peerdevicenet.CONNECTION_FAILED"<br>
+        ACTION_CONNECTED = "com.xconns.peerdevicenet.CONNECTED"<br>
+        ACTION_DISCONNECTED = "com.xconns.peerdevicenet.DISCONNECTED"<br>
+      </p>
+      Connection related data are packaged as intent extras using the
+      following key names:<br>
+      <ul>
+        <li>"NET_TYPE","NET_NAME","NET_PASS","NET_INFO","NET_INTF_NAME","NET_ADDR","NET_INTF_MCAST":
+
+
+
+
+
+          info about networks this device is on<br>
+        </li>
+        <li>"PEER_NAME", "PEER_ADDR", "PEER_PORT": peer device to be
+          connected or disconnected<br>
+        </li>
+        <li>"TIMEOUT": search or connection timeout</li>
+        <li>"AUTHENTICATION_TOKEN": a byte[] array to contain the token
+          for authentication</li>
+        <li>"CONNECTION_DENY_CODE": the reason why connection is denied
+          by peer device.<br>
+        </li>
+      </ul>
+    </div>
+    <ol start="2">
+      <li>IDL api</li>
+    </ol>
+    <div style="margin-left: 40px;">The IDL(aidl) interfaces related to
+      device connection setup are defined in two files:<br>
+      <ul>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRouterConnectionService.aidl">IRouterConnectionService.aidl</a></li>
+        <li><a
+href="https://github.com/yigongliu/PeerDeviceNet_API/tree/master/com/xconns/peerdevicenet/IRouterConnectionHandler.aidl">IRouterConnectionHandler.aidl</a><br>
+        </li>
+      </ul>
+      Apps can bind to the following named service to perform connection
+      setup:<br>
+      <div style="margin-left: 40px;">ACTION_CONNECTION_SERVICE =
+        "com.xconns.peerdevicenet.ConnectionService".<br>
+        <br>
+      </div>
+    </div>
+    <div style="margin-left: 40px;">Once bound, the returned service
+      object has the following methods for connection setup:<br>
+      <div style="margin-left: 40px;"><b>IRouterConnectionService {</b><br>
+        &nbsp;&nbsp;&nbsp; // --- network api ---<br>
+        &nbsp;&nbsp;&nbsp; //get connected networks<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void getNetworks(int sessionId);</b><br>
+        &nbsp;&nbsp;&nbsp; //get current network used by PeerDeviceNet
+        for peer connections<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void getActiveNetwork(int
+          sessionId);</b><br>
+        &nbsp;&nbsp;&nbsp; //choose a network for peer connections<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void activateNetwork(int
+          sessionId, in NetInfo net);</b><br>
+        <br>
+        &nbsp;&nbsp;&nbsp; // --- peer device discovery/search api ---<br>
+        &nbsp;&nbsp;&nbsp; //during discovery/search, broadcast this
+        device's DeviceInfo(name, addr, port) and receive peers'
+        DeviceInfo<br>
+        &nbsp;&nbsp;&nbsp; //peers' search time-spans must overlap so
+        that they can find each other<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void startPeerSearch(int
+          sessionId, int timeout);<br>
+          &nbsp;&nbsp;&nbsp; oneway void stopPeerSearch(int sessionId)</b><br>
+        <br>
+        &nbsp;&nbsp;&nbsp; // --- connection api ---<br>
+        &nbsp;&nbsp;&nbsp; //send connect request to a peer device with
+        security credentials<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void connect(int sessionId, in
+          DeviceInfo peer, in byte[] token, int timeout);&nbsp; </b><br>
+        &nbsp;&nbsp;&nbsp; //disconnect from a peer<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void disconnect(int sessionId, in
+          DeviceInfo peer);</b><br>
+        &nbsp;&nbsp;&nbsp; //accept a peer's connection request (so a
+        peer-peer connection will be setup)<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void acceptConnection(int
+          sessionId, in DeviceInfo peer);</b><br>
+        &nbsp;&nbsp;&nbsp; //deny a peer's connection request<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void denyConnection(int sessionId,
+          in DeviceInfo peer, int rejectCode);</b><br>
+        }<br>
+      </div>
+      <br>
+      Apps will register the following handler to handle connection
+      related events:<br>
+      <div style="margin-left: 40px;"><b>IRouterConnectionHandler {</b><br>
+        &nbsp;&nbsp;&nbsp; // --- network related callbacks ---<br>
+        &nbsp;&nbsp;&nbsp; //results of calling getNetworks()<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void onGetNetworks(in NetInfo[]
+          nets);</b><br>
+        &nbsp;&nbsp;&nbsp; //runtime detect that this device is
+        connected to a new network<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void onNetworkConnected(in NetInfo
+          net);</b><br>
+        &nbsp;&nbsp;&nbsp; //runtime detect that this device is
+        disconnected from a network<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onNetworkDisconnected(in
+          NetInfo net);</b><br>
+        &nbsp;&nbsp;&nbsp; //result of calling getActiveNetwork()<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onGetActiveNetwork(in NetInfo
+          net);</b><br>
+        &nbsp;&nbsp;&nbsp; //completion of PeerDeviceNet switching to a
+        network for peer connections<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void onNetworkActivated(in NetInfo
+          net);<br>
+        </b> <br>
+        &nbsp;&nbsp;&nbsp; // --- peer search/discovery callbacks ---<br>
+        &nbsp;&nbsp;&nbsp; //found a peer device (ie. received a peer's
+        DeviceInfo)<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onSearchFoundDevice(in
+          DeviceInfo device);</b><br>
+        &nbsp;&nbsp;&nbsp; //search session complete, either time out or
+        by stopPeerSearch()<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onSearchComplete();</b><br>
+        <br>
+        &nbsp;&nbsp;&nbsp; // --- connection callbacks ---<br>
+        &nbsp;&nbsp;&nbsp; //receive a peer's connection request with
+        its security credential<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onConnecting(in DeviceInfo
+          device, in byte[] token);</b><br>
+        &nbsp;&nbsp;&nbsp; //my connection request to peer (identified
+        by "device") failed with rejectCode (explicit reject by user,
+        network fail, etc.)<br>
+        &nbsp;&nbsp;&nbsp; <b>oneway void onConnectionFailed(in
+          DeviceInfo device, int rejectCode);&nbsp; </b><br>
+        &nbsp;&nbsp;&nbsp; //a peer successfully connected, either my
+        connection request accepted or i accept peer's connect request<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void onConnected(in DeviceInfo
+          device);</b><br>
+        &nbsp;&nbsp;&nbsp; //a peer disconnected<br>
+        &nbsp;&nbsp;&nbsp;<b> oneway void onDisconnected(in DeviceInfo
+          device);</b><br>
+        }<br>
+      </div>
+    </div>
+    <ol start="3">
+      <li>Messenger api</li>
+    </ol>
+    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Apps send Messages with the
+    following message ids for connection setup:<br>
+    <div style="margin-left: 40px;">&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; public static final int GET_NETWORKS = 10700;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      GET_ACTIVE_NETWORK = 10701;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      ACTIVATE_NETWORK = 10702;<br>
+      <div style="margin-left: 40px;">public final static int
+        START_SEARCH = -10200;<br>
+        public final static int STOP_SEARCH = -10201;<br>
+        public final static int CONNECT = -10300;<br>
+        public final static int DISCONNECT = -10301;<br>
+        public final static int ACCEPT_CONNECTION = -10302;<br>
+        public final static int DENY_CONNECTION = -10303;<br>
+      </div>
+    </div>
+    <div style="margin-left: 40px;"> <br>
+      Apps need to handle Messages with the following ids for connection
+      setup:<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      GET_NETWORKS = 10700;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      GET_ACTIVE_NETWORK = 10701;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      ACTIVATE_NETWORK = 10702;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      NETWORK_CONNECTED = 10703;<br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; public static final int
+      NETWORK_DISCONNECTED = 10704;<br>
+      <div style="margin-left: 40px;">public final static int
+        SEARCH_FOUND_DEVICE = -10210;<br>
+      </div>
+      <div style="margin-left: 40px;"> public final static int
+        SEARCH_COMPLETE = -10211;<br>
+        public final static int CONNECTING = -10310;<br>
+        public final static int CONNECTION_FAILED = -10311;<br>
+        public final static int CONNECTED = -10312;<br>
+        public final static int DISCONNECTED = -10313;<br>
+      </div>
+      <br>
+      Connection related data are packaged as a bundle inside Message
+      object using the same key names as intent api.<br>
+      <br>
+    </div>
+  </body>
+</html>

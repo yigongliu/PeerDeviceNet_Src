@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/2506/trunk/android/src/com/google/zxing/client/android/camera
+END
+CameraConfigurationManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/!svn/ver/2506/trunk/android/src/com/google/zxing/client/android/camera/CameraConfigurationManager.java
+END
+PreviewCallback.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/2273/trunk/android/src/com/google/zxing/client/android/camera/PreviewCallback.java
+END
+CameraManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/2506/trunk/android/src/com/google/zxing/client/android/camera/CameraManager.java
+END
+AutoFocusManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/2381/trunk/android/src/com/google/zxing/client/android/camera/AutoFocusManager.java
+END
+FrontLightMode.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/2506/trunk/android/src/com/google/zxing/client/android/camera/FrontLightMode.java
+END

@@ -1,0 +1,450 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1"
+      http-equiv="Content-Type">
+    <title>PeerDeviceNet - User guide</title>
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <div style="text-align: left;">
+        <div style="text-align: center;">
+          <table bgcolor="#ccccff" border="0" cellpadding="2"
+            cellspacing="2" width="100%">
+            <tbody>
+              <tr>
+                <td align="right" valign="middle" width="45%"><img
+                    alt="PeerDeviceNet" src="router72.png" height="72"
+                    width="72"><br>
+                </td>
+                <td align="left" valign="middle">
+                  <h2>User Guide<br>
+                  </h2>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <table style=" text-align: left; width: 100%;" bgcolor="#ccffff"
+          border="0" cellpadding="2" cellspacing="2">
+          <tbody>
+            <tr>
+              <td style=" text-align: center; vertical-align: middle;
+                background-color: rgb(204, 255, 255);"><a
+                  href="index.html">Home</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a
+                  href="features.html">Features</a>&nbsp;&nbsp; | &nbsp;
+                <a href="install.html">Install</a> &nbsp; |&nbsp;&nbsp;
+                User guide&nbsp;&nbsp; |&nbsp;&nbsp; <a href="api.html">Developer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  API</a>&nbsp;&nbsp; |&nbsp;&nbsp; <a
+                  href="contact.html">Contact</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <ul>
+          <li>Video tutorials</li>
+        </ul>
+      </div>
+      <ul style="text-align: left;">
+      </ul>
+      <ol style="text-align: left;">
+        <ul>
+          <li>How to connect your devices</li>
+          <ul>
+            <li><a href="https://www.youtube.com/watch?v=RNXcnXgRPH8">Connect
+
+                by using camera scanning QR code</a><br>
+            </li>
+            <li><a href="http://www.youtube.com/watch?v=iDvpS4zFkDE">Connect
+
+
+
+
+
+
+                through Wi-Fi network</a></li>
+            <li><a href="http://www.youtube.com/watch?v=8aSCSkX62r0">Connect
+
+
+
+
+
+
+                Wi-Fi Direct capable devices</a></li>
+            <li><a href="http://www.youtube.com/watch?v=k2a7oUiPVYg">Create
+
+
+
+
+
+
+                Wi-Fi Direct software access point to connect devices</a></li>
+            <li>Connect devices through existing mobile hotspot network
+              (not creating it, since no SDK api for it and carriers
+              will restrict/provide features for creating mobile
+              hotspot)<br>
+            </li>
+          </ul>
+          <li><a href="http://www.youtube.com/watch?v=wkTFBLmT0KU">Share
+              web pages</a></li>
+          <li><a href="http://www.youtube.com/watch?v=hmwfcG4jEb8">Transfer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              contact information</a></li>
+          <li><a href="http://www.youtube.com/watch?v=m30U-gZWJ-U">Send
+              pictures and videos</a></li>
+          <li><a href="http://www.youtube.com/watch?v=qb-5ahK_qVY">Send
+              PDF/Word documents</a><br>
+          </li>
+        </ul>
+      </ol>
+      <ul style="text-align: left;">
+        <li>A few guidelines</li>
+        <ul>
+          <li>
+            <p>Three new GUI components are added.</p>
+          </li>
+          <ul>
+            <li>ConnectionManager: display connected devices, detailed
+              connection parameters, handle peer connection requests</li>
+            <li>PeerConnector: actively initiate device connections by
+              using camera scanning QR code at leader device<br>
+            </li>
+            <li>SessionManager: <br>
+            </li>
+            <ul>
+              <li>start send sessions</li>
+              <li>confirm receiving data from peer devices</li>
+              <li>monitor the progress of send/receive sessions.</li>
+              <ul>
+              </ul>
+            </ul>
+          </ul>
+          <li>
+            <p>ConnectionManager.</p>
+          </li>
+          <ul>
+            <li>ConnectionManager is started when you press
+              "PeerDeviceNet" icon on home screen.<br>
+            </li>
+            <li>The default rule for connecting devices are "pairing"
+              and confirmation. <br>
+            </li>
+            <ul>
+              <li>"Pairing" means that if peer devices (2 or more) start
+                ConnectionManager or touch "Search and connect" buttons
+                within a same short time span/period, they will find
+                each other and connect. "Pairing" here is slightly
+                different, not only for a pair (or two) devices, but
+                could be for 3 or more devices.</li>
+              <li>Confirmation means ConnectionManager will prompt user
+                about peer connection requests and users have to grant
+                permission before connection complete. If
+                ConnectionManager is not active at top when peer
+                connection requests come in, the connection requests
+                will fail automatically.<br>
+              </li>
+            </ul>
+            <li>For further security, use PIN.</li>
+            <li>For connecting devices to WI-FI network, or setting up
+              WI-FI Direct group, you could use Android native GUI and
+              workflow. When proper, ConnectionManager will provide
+              links to jump to proper place inside Android system
+              preference settings.</li>
+            <ul>
+              <li>Current Android native GUI doesn't support creating
+                WI-FI direct software access point, which is useful for
+                connecting legacy WI-FI devices. At devices enabled with
+                WI-FI direct, you can use PeerConnector to create WI-FI
+                direct hotspot as leader device, other devices can use
+                front or rear camera to scan leader's QR code to
+                connect, or manually connect using displayed network
+                name (SSID) and passphrase.</li>
+            </ul>
+          </ul>
+        </ul>
+      </ul>
+      <ul style="text-align: left;">
+        <ul>
+          <ul>
+            <ul>
+              <ol>
+              </ol>
+            </ul>
+          </ul>
+          <li>PeerConnector</li>
+        </ul>
+      </ul>
+      <ul style="text-align: left;">
+        <ul>
+          <ul>
+            <li>You can start PeerConnector two ways: at
+              ConnectionManager, click "Connect by Camera/QR code"; or
+              at SessionManager, hit "add peers".</li>
+            <li>PeerConnector provides two ways to connect peer devices:</li>
+            <ul>
+              <li>By camera scanning QR code. One device will be chosen
+                as leader which will choose network (wifi, wifi direct
+                or mobile hotspot) and generate QR code image; others
+                can join the group and connect to peers by simply
+                scanning leader's QR code using rear or front camera.</li>
+              <li>By search and find using network multicast. Similar to
+                at ConnectionManager tapping "Search and connect" button
+                at multiple devices simultaneously; they can find and
+                connect to each other automatically.</li>
+            </ul>
+          </ul>
+          <li>
+            <p>SessionManager.</p>
+          </li>
+          <ul>
+            <li>Send</li>
+            <ul>
+              <li>PeerDeviceNet extends Android's "send and share"
+                feature. So it will be a target inside the "send via" or
+                "share via" lists of many apps.</li>
+              <li>Go to apps which own the data you wish to send (such
+                as Gallery for photos and videos), choose the data;
+                choose PeerDeviceNet from "send via" or "share via"
+                list.</li>
+              <li>SessionManager GUI will show the connected devices to
+                allow user choose some or all of them to send data; "Add
+                peers" button will bring up ConnectionManager to connect
+                new devices.<br>
+              </li>
+            </ul>
+            <li>Receive</li>
+            <ul>
+              <li>When peer sends data, if SessionManager is active at
+                top, it will be updated with new data info; if
+                ConnectionManager is active, SessionManager GUI will be
+                brought up to show new data info. If user is using other
+                apps, a notification will be saved in system
+                notification area to allow bringing up SessionManager
+                later.</li>
+              <li>At SessionManager, user can decide accepting some or
+                all data from peer devices, other unchosen data will be
+                rejected automatically.<br>
+              </li>
+            </ul>
+            <li>Progress monitoring</li>
+            <ul>
+              <li>SessionManager will show the progress of each
+                send/receive session.</li>
+              <li>Sessions can be canceled at any time</li>
+              <li>When a receive session is finished</li>
+              <ul>
+                <li>if PeerDeviceNet is active at top, received data
+                  will be displayed right away</li>
+                <li>if other apps are active, a notification will be
+                  saved to allow user show the data later.<br>
+                </li>
+              </ul>
+            </ul>
+          </ul>
+        </ul>
+        <li>
+          <p>Screenshots</p>
+        </li>
+      </ul>
+      <table style="text-align: left; margin-left: 40px;" border="1"
+        cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">Multiple Devices<br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/4device1.png"><img alt="device group
+                  1" src="screenshots/grp1.png" style="border: 0px
+                  solid; width: 96px; height: 60px;"></a></td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/4device2.png"><img alt="device group
+                  2" src="screenshots/grp2.png" style="border: 0px
+                  solid; width: 96px; height: 60px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/4device3.png"><img alt="device group
+                  3" src="screenshots/grp3.png" style="border: 0px
+                  solid; width: 96px; height: 60px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;"><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Amazon Kindle Fire<br>
+              Android 2.3<br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/kindle/conned.png"><img alt="peer
+                  device connected"
+                  src="screenshots/kindle/conned_thumb.png"
+                  style="border: 0px solid; width: 56px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/kindle/send.png"><img alt="pick files
+                  to send" src="screenshots/kindle/send_thumb.png"
+                  style="border: 0px solid; width: 56px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/kindle/send-recv.png"><img
+                  alt="send_recv"
+                  src="screenshots/kindle/send_recv_thumb.png"
+                  style="border: 0px solid; width: 56px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/kindle/prog1.png"><img alt="progress"
+                  src="screenshots/kindle/prog1_thumb.png"
+                  style="border: 0px solid; width: 56px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/kindle/prog2.png"><img alt="progress
+                  2" src="screenshots/kindle/prog2_thumb.png"
+                  style="border: 0px solid; width: 56px; height: 96px;"></a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Google Nexus 7<br>
+              Android 4.1.1<br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/nexus7/conned.png"><img
+                  alt="connected"
+                  src="screenshots/nexus7/conned_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/nexus7/send.png"><img alt="pick files
+                  and send" src="screenshots/nexus7/send_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/nexus7/send-recv.png"><img alt="send
+                  and recv" src="screenshots/nexus7/send_recv_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/nexus7/prog1.png"><img alt="progress
+                  1" src="screenshots/nexus7/prog1_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/nexus7/prog2.png"><img alt="progress
+                  2" src="screenshots/nexus7/prog2_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Samsung Galaxy Tab 2.0<br>
+              Android 4.0.3<br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/tab2/conned.png"><img alt="connected"
+                  src="screenshots/tab2/conned_thumb.png" style="border:
+                  0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/tab2/send.png"><img alt="send"
+                  src="screenshots/tab2/send_thumb.png" style="border:
+                  0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/tab2/send-recv.png"><img alt="send and
+                  recv" src="screenshots/tab2/send_recv_thumb.png"
+                  style="border: 0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/tab2/prog1.png"><img alt="progress 1"
+                  src="screenshots/tab2/prog1_thumb.png" style="border:
+                  0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/tab2/prog2.png"><img alt="progress 2"
+                  src="screenshots/tab2/prog2_thumb.png" style="border:
+                  0px solid; width: 60px; height: 96px;"></a><br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Samsung Galaxy Vibrant<br>
+              Android 2.2<br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/vibrant/conned.png"><img
+                  alt="connected"
+                  src="screenshots/vibrant/conned_thumb.png"
+                  style="border: 0px solid; border: 0px solid; width:
+                  58px; height: 97px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/vibrant/send.png"><img alt="send"
+                  src="screenshots/vibrant/send_thumb.png"
+                  style="border: 0px solid; border: 0px solid; width:
+                  58px; height: 97px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/vibrant/recv.png"><img alt="recv"
+                  src="screenshots/vibrant/recv_thumb.png"
+                  style="border: 0px solid; width: 58px; height: 97px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/vibrant/prog1.png"><img alt="progress
+                  1" src="screenshots/vibrant/prog1_thumb.png"
+                  style="border: 0px solid; width: 58px; height: 97px;"></a><br>
+            </td>
+            <td style="vertical-align: top;"><a
+                href="screenshots/vibrant/prog2.png"><img alt="progress
+                  2" src="screenshots/vibrant/prog2_thumb.png"
+                  style="border: 0px solid; width: 58px; height: 97px;"></a><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
