@@ -106,7 +106,7 @@ public class TCPConnector implements Connector {
 			Log.d(TAG, "Client: start recving from server");
 			new TCPConnection(socket, mInputStream, mOutputStream,
 					mService.mMyDeviceInfo, true/* accepted */, to, token,
-					mService.getLocalGroupInfo(), mService.mConnRecver).start();
+					mService.getLocalGroupInfo(), mService.mConnRecver, mService.timer).start();
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 			mService.mConnRecver
@@ -161,7 +161,7 @@ public class TCPConnector implements Connector {
 					new TCPConnection(client, mInputStream, mOutputStream,
 							mService.mMyDeviceInfo,
 							false/* need accept confirm */, to, null,
-							mService.getLocalGroupInfo(), mService.mConnRecver)
+							mService.getLocalGroupInfo(), mService.mConnRecver, mService.timer)
 							.start();
 				} catch (IOException e) {
 					err = true;

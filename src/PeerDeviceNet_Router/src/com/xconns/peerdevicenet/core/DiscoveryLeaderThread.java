@@ -353,7 +353,7 @@ public class DiscoveryLeaderThread extends Thread {
 				// init stop timer
 				if (scanTimeout > 0) {
 					try {
-						Log.d(TAG, "start timer for scan conn to peer");
+						Log.d(TAG, "start timer for scan conn to peer, scanTime="+scanTimeout);
 						timerTask = scanner.context.timer.schedule(
 								new Runnable() {
 									@Override

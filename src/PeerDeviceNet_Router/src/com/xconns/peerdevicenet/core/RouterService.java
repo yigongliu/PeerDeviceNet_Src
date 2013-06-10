@@ -18,6 +18,7 @@ package com.xconns.peerdevicenet.core;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -27,23 +28,20 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.xconns.peerdevicenet.DeviceInfo;
 import com.xconns.peerdevicenet.NetInfo;
 import com.xconns.peerdevicenet.Router;
 import com.xconns.peerdevicenet.Router.MsgId;
+import com.xconns.peerdevicenet.router.R;
 import com.xconns.peerdevicenet.utils.RouterConfig;
 import com.xconns.peerdevicenet.utils.Utils;
-
-import com.xconns.peerdevicenet.router.R;
 
 /*
  * the following interfaces define the contracts between components of Router services
@@ -214,9 +212,9 @@ public class RouterService extends Service implements CoreAPI {
 	private MessengerAPIPeer messengerPeer = null;
 
 	// internal data
-	int connLivenessTimeout = RouterConfig.DEF_CONN_LIVENESS_TIMEOUT;
-	int connTimeout = RouterConfig.DEF_CONN_TIMEOUT;
-	int searchTimeout = RouterConfig.DEF_SEARCH_TIMEOUT;
+	int connLivenessTimeout = RouterConfig.DEF_CONN_LIVENESS_TIMEOUT * 1000;
+	int connTimeout = RouterConfig.DEF_CONN_TIMEOUT * 1000;
+	int searchTimeout = RouterConfig.DEF_SEARCH_TIMEOUT * 1000;
 	boolean useSSL = RouterConfig.DEF_USE_SSL;
 	DeviceInfo mMyDeviceInfo = null;
 
@@ -230,7 +228,7 @@ public class RouterService extends Service implements CoreAPI {
 	// map of remote connections indexed by peer addr
 	ConcurrentHashMap<String, Connection> mRemoteConnTable = new ConcurrentHashMap<String, Connection>();
 	// map of remote connections indexed by group id
-	ConcurrentHashMap<String, ArrayList<Connection>> mGroupConnTable = new ConcurrentHashMap<String, ArrayList<Connection>>();
+	ConcurrentHashMap<String, Vector<Connection>> mGroupConnTable = new ConcurrentHashMap<String, Vector<Connection>>();
 	// map of local api peers indexed by group id
 	ConcurrentHashMap<String, GroupHandler> mLocalGroupTable = new ConcurrentHashMap<String, GroupHandler>();
 	// local conn handlers
@@ -493,7 +491,7 @@ public class RouterService extends Service implements CoreAPI {
 		sendMsg(groupId, null, b);
 
 		// send Self_Join msgs with all connected peer devices
-		ArrayList<Connection> conns = mGroupConnTable.get(groupId);
+		Vector<Connection> conns = mGroupConnTable.get(groupId);
 		if (conns != null && conns.size() > 0) {
 			Log.d(TAG,
 					"join group : has existing peers "
@@ -552,7 +550,7 @@ public class RouterService extends Service implements CoreAPI {
 		// group join/leave msgs should be broadcasted
 		if (groupId != null && mid != MsgId.JOIN_GROUP
 				&& mid != MsgId.LEAVE_GROUP) {
-			ArrayList<Connection> conns = mGroupConnTable.get(groupId);
+			Vector<Connection> conns = mGroupConnTable.get(groupId);
 			if (conns != null) {
 				for (Connection c : conns)
 					c.sendData(data);
@@ -637,7 +635,7 @@ public class RouterService extends Service implements CoreAPI {
 			ConnHandler h = mConnHandlerTable.get(sessionId);
 			h.onGetPeerDevices(devices);
 		} else {
-			ArrayList<Connection> conns = mGroupConnTable.get(groupId);
+			Vector<Connection> conns = mGroupConnTable.get(groupId);
 			if (conns != null && conns.size() > 0) {
 				int numPeers = conns.size();
 				devices = new DeviceInfo[numPeers];
@@ -777,6 +775,7 @@ public class RouterService extends Service implements CoreAPI {
 	};
 	
 	public void onDeviceDisconnected(Connection conn) {
+		Log.d(TAG, "onDeviceDisconnected");
 		DeviceInfo peer = conn.getPeerDevice();
 		if (peer.addr == null) {
 			return;
@@ -784,10 +783,13 @@ public class RouterService extends Service implements CoreAPI {
 		mRemoteConnTable.remove(peer.addr);
 		// send peer leave msgs for peer groups
 		for (String groupId : conn.getPeerGroups()) {
+			Log.d(TAG, "onDeviceDisconnected : removefrom group: "+groupId);
 			if (groupId != null) {
-				ArrayList<Connection> l = mGroupConnTable.get(groupId);
-				if (l != null)
+				Vector<Connection> l = mGroupConnTable.get(groupId);
+				if (l != null) {
+					Log.d(TAG, "onDeviceDisconnected 2");
 					l.remove(conn);
+				}
 				GroupHandler gh = mLocalGroupTable.get(groupId);
 				if (gh != null) {
 					gh.onPeerLeave(peer);
@@ -821,9 +823,9 @@ public class RouterService extends Service implements CoreAPI {
 				}
 				Connection conn = mRemoteConnTable.get(addr);
 				if (groupId != null && conn != null) {
-					ArrayList<Connection> l = mGroupConnTable.get(groupId);
+					Vector<Connection> l = mGroupConnTable.get(groupId);
 					if (l == null) {
-						l = new ArrayList<Connection>();
+						l = new Vector<Connection>();
 						mGroupConnTable.put(groupId, l);
 						l.add(conn);
 						conn.addPeerGroup(groupId);
@@ -849,7 +851,7 @@ public class RouterService extends Service implements CoreAPI {
 				}
 				conn = mRemoteConnTable.get(addr);
 				if (groupId != null && conn != null) {
-					ArrayList<Connection> l = mGroupConnTable.get(groupId);
+					Vector<Connection> l = mGroupConnTable.get(groupId);
 					if (l != null) {
 						l.remove(conn);
 						if (l.size() == 0)
@@ -924,9 +926,9 @@ public class RouterService extends Service implements CoreAPI {
 			// send peer join msgs for peer groups
 			for (String groupId : conn.getPeerGroups()) {
 				if (groupId != null) {
-					ArrayList<Connection> l = mGroupConnTable.get(groupId);
+					Vector<Connection> l = mGroupConnTable.get(groupId);
 					if (l == null) {
-						l = new ArrayList<Connection>();
+						l = new Vector<Connection>();
 						mGroupConnTable.put(groupId, l);
 					}
 					l.add(conn);

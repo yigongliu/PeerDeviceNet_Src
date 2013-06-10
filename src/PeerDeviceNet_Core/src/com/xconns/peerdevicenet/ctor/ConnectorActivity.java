@@ -16,8 +16,10 @@
 
 package com.xconns.peerdevicenet.ctor;
 
+import java.nio.charset.Charset;
 import java.util.Timer;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,10 +33,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiManager;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -52,6 +57,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.WriterException;
 import com.xconns.peerdevicenet.DeviceInfo;
@@ -62,8 +68,8 @@ import com.xconns.peerdevicenet.cm.ConnectionManagerService;
 import com.xconns.peerdevicenet.core.R;
 import com.xconns.peerdevicenet.core.WifiDirectGroupManager;
 import com.xconns.peerdevicenet.core.WifiHotspotTransport;
-import com.xconns.peerdevicenet.utils.Utils;
 import com.xconns.peerdevicenet.utils.RouterConfig;
+import com.xconns.peerdevicenet.utils.Utils;
 
 public class ConnectorActivity extends Activity {
 	final static String TAG = "CtorActivity";
@@ -75,6 +81,11 @@ public class ConnectorActivity extends Activity {
 
 	SharedPreferences settings = null;
 
+	CheckBox useNFCBox = null;
+	boolean useNFC = true;
+	NfcAdapter mNfcAdapter = null;
+	Intent nfcIntent = null;
+	
 	LinearLayout groupNType = null;
 	CheckBox useSSLBox = null;
 	boolean useSSL = false;
@@ -162,6 +173,12 @@ public class ConnectorActivity extends Activity {
 		// getWindow().setLayout(LayoutParams.FILL_PARENT,
 		// LayoutParams.WRAP_CONTENT);
 
+		//check if NFC supported or not
+		if(Utils.ANDROID_VERSION >= 14) { //android beam available
+			checkNFC();
+		}
+		
+		//check if WifiDirect supported or not
 		wifiDirectSupported = getPackageManager().hasSystemFeature(
 				PackageManager.FEATURE_WIFI_DIRECT);
 		if (wifiDirectSupported) {
@@ -217,6 +234,15 @@ public class ConnectorActivity extends Activity {
 
 		Log.d(TAG, "onCreate() done");
 	}
+	
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
+	void checkNFC() {
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		Log.d(TAG, "NFC init");
+		if (mNfcAdapter != null) {
+			Log.d(TAG, "NFC supported");
+		}
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -253,18 +279,54 @@ public class ConnectorActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Closed = false;
-
-		//
-		// getPeerDeviceNetInfo();
 
 		//
 		if (grpMgr != null) {
 			grpMgr.onResume();
 		}
-		//
-		resumeLeader();
+
+		// resume caused by intent from an Android Beam
+		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+			processNfcIntent(getIntent());
+		} else {
+			Closed = false;
+			//
+			// getPeerDeviceNetInfo();
+			//
+			resumeLeader();
+		}
 	}
+	
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+    }
+	
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	void processNfcIntent(Intent intent) {
+		nfcIntent = intent;
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(
+                NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        //get encoded data
+        String res = new String(msg.getRecords()[0].getPayload());
+        //show progr bar
+        showGroup(-1);
+        //handle it
+		Log.d(TAG, "Decoded raw res: " + res);
+		isLeader = false;
+		chosenNType = NetInfo.WiFi;
+		if (res != null) {
+			qrData = QRCodeData.decode(res);
+			if (qrData != null) {
+				Log.d(TAG, "Decoded QRCode: " + qrData.toString());
+				Log.d(TAG, "chosen Ntype : " + chosenNType);
+				setupWifiConn(qrData);
+			}
+		}
+    }
 
 	private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -277,7 +339,7 @@ public class ConnectorActivity extends Activity {
 			connMgrService.setSimpleConnectionInfo(devName, useSSL);
 
 			// in case we miss it at onResume()
-			getPeerDeviceNetInfo();
+			//getPeerDeviceNetInfo();
 		}
 
 		public void onServiceDisconnected(ComponentName arg0) {
@@ -339,10 +401,50 @@ public class ConnectorActivity extends Activity {
 					}
 				});
 	}
-
+	
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD) 
+	void initNfcBox() {
+		if(mNfcAdapter.isEnabled()) {
+			useNFCBox.setChecked(true);
+			useNFC = true;
+		} else {
+			useNFCBox.setChecked(false);
+			useNFC = false;
+		}		
+	}
+	
+	@TargetApi(Build.VERSION_CODES.GINGERBREAD) 
+	void setNfc(boolean checked) {
+		if(checked) {
+			useNFC = true;
+			if (!mNfcAdapter.isEnabled()) {
+				//goto sys pref to turn on nfc
+				Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                startActivity(intent);
+			}
+		} else {
+			useNFC = false;
+		}
+	}
+	
 	void initGroupNType() {
 		groupNType = (LinearLayout) findViewById(R.id.group_type);
 		//
+		useNFCBox = (CheckBox) findViewById(R.id.use_nfc);
+		if (mNfcAdapter == null || Utils.ANDROID_VERSION < 14) {
+			useNFCBox.setEnabled(false);
+		} 
+		else {
+			initNfcBox();
+			useNFCBox.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					setNfc(useNFCBox.isChecked());
+				}
+			});
+		}
+		
 		useSSLBox = (CheckBox) findViewById(R.id.use_ssl);
 
 		useSSLBox.setOnClickListener(new OnClickListener() {
@@ -438,6 +540,9 @@ public class ConnectorActivity extends Activity {
 
 	void doLeader() {
 		isLeader = true;
+		if (mNfcAdapter != null && Utils.ANDROID_VERSION >= 14) {
+			initNfcBox();
+		}
 		// start query network info
 		getPeerDeviceNetInfo();
 		showGroup(2);
@@ -643,26 +748,8 @@ public class ConnectorActivity extends Activity {
 			String name1 = netWifi.name.trim();
 			String name2 = qrData.ssid.trim();
 			Log.d(TAG, "ssids = " + name1 + ", " + name2);
-			char[] b1 = name1.toCharArray();
-			if (b1.length > 2) {
-				int start = 0;
-				if (b1[0] == '"')
-					start = 1;
-				int end = b1.length - 1;
-				if (b1[end] == '"')
-					end = b1.length - 2;
-				name1 = new String(b1, start, end - start + 1);
-			}
-			char[] b2 = name2.toCharArray();
-			if (b2.length > 2) {
-				int start = 0;
-				if (b2[0] == '"')
-					start = 1;
-				int end = b2.length - 1;
-				if (b2[end] == '"')
-					end = b2.length - 2;
-				name2 = new String(b2, start, end - start + 1);
-			}
+			name1 = trimQuote(name1);
+			name2 = trimQuote(name2);
 			Log.d(TAG, "ssids2 = " + name1 + ", " + name2);
 			if (name1.equals(name2)) {
 				match = true;
@@ -681,6 +768,20 @@ public class ConnectorActivity extends Activity {
 			new WifiConnector(this, wifiManager).execute(qrData);
 		}
 	}
+	
+	public static String trimQuote(String name1) {
+		char[] b1 = name1.toCharArray();
+		if (b1.length > 2) {
+			int start = 0;
+			if (b1[0] == '"')
+				start = 1;
+			int end = b1.length - 1;
+			if (b1[end] == '"')
+				end = b1.length - 2;
+			name1 = new String(b1, start, end - start + 1);
+		}
+		return name1;
+	}
 
 	void setUseSSL(boolean useSSL) {
 		Log.d(TAG, "setUseSSL: " + useSSL);
@@ -694,143 +795,165 @@ public class ConnectorActivity extends Activity {
 			connMgrService.setSimpleConnectionInfo(null, useSSL);
 		}
 	}
-
-	public Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (Closed)
-				return;
-			DeviceInfo dev = null;
-			switch (msg.what) {
-			case WIFI_CONNECTOR_FAIL_MSG:
-				showDialog(WIFI_CONNECTOR_FAIL_DIALOG);
-				break;
-			case Router.MsgId.GET_NETWORKS:
-				Log.d(TAG, "GET_NETWORKS");
-				NetInfo[] nets = (NetInfo[]) msg.obj;
-				Log.d(TAG, "GET_NETWORKS = " + nets);
-				if (nets != null && nets.length > 0) {
-					for (NetInfo net : nets) {
-						connNets[net.type] = net;
-					}
-					// dont check & limit to leader, since user may have not
-					// chosen yet.
-					// simply update GUI for all, it will not show foe member
-					// if (isLeader) {
-					netConnectedAtLeader(nets);
-					// }
-					if (connMgrService != null) {
-						connMgrService.getActiveNetwork();
-					}
-				}
-				break;
-			case Router.MsgId.GET_ACTIVE_NETWORK:
-				Log.d(TAG, "GET_ACTIVE_NETWORK");
-				Log.d(TAG, "chosen Ntype : " + chosenNType);
-
-				NetInfo net = (NetInfo) msg.obj;
-				if (net != null) { 
-					if (actNetType != NetInfo.NoNet &&
-							connNets[actNetType] != null && net.name != null && net.name.equals(connNets[actNetType].name)) {
-						return;
-					}
-					actNetType = net.type;
-					if (isLeader && chosenNType == actNetType) {
-						netActivatedAtLeader(net);
-					}
-					if (connMgrService != null) {
-						connMgrService.getDeviceInfo();
-					}
-					/*
-					 * Log.d(TAG, "chosen Ntype : " +
-					 * chosenNType+", net.type="+net.type); if (chosenNType ==
-					 * net.type) { setUseSSL(qrData.useSSL); }
-					 */
-				}
-				break;
-			case Router.MsgId.NETWORK_CONNECTED:
-				Log.d(TAG, "NETWORK_CONNECTED");
-				net = (NetInfo) msg.obj;
+	
+	public void onGetNetworks(NetInfo[] nets) {
+		if (Closed)
+			return;
+		Log.d(TAG, "GET_NETWORKS = " + nets);
+		if (nets != null && nets.length > 0) {
+			for (NetInfo net : nets) {
 				connNets[net.type] = net;
-				nets = new NetInfo[] { net };
-				if (isLeader) {
-					netConnectedAtLeader(nets);
-				}
-				Log.d(TAG, "activateNet type=" + net.type);
-				if (net.type == chosenNType) {
-					if (connMgrService != null)
-						connMgrService.activateNetwork(net);
-				}
-				break;
-			case Router.MsgId.NETWORK_DISCONNECTED:
-				Log.d(TAG, "NETWORK_DISCONNECTED");
-				net = (NetInfo) msg.obj;
-				connNets[net.type] = null;
-				if (isLeader) {
-					netDisconnectedAtLeader(net);
-				}
-				if (actNetType == net.type) {
-					actNetType = NetInfo.NoNet;
-				}
-				break;
-			case Router.MsgId.ACTIVATE_NETWORK:
-				Log.d(TAG, "ACTIVATE_NETWORK");
-				net = (NetInfo) msg.obj;
-				if (net != null) {
-					if (actNetType != NetInfo.NoNet &&
-							connNets[actNetType] != null && net.name != null && net.name.equals(connNets[actNetType].name)) {
-						return;
-					}
-					actNetType = net.type;
-					if (isLeader && chosenNType == actNetType) {
-						netActivatedAtLeader(net);
-					}
-					if (connMgrService != null) {
-						connMgrService.getDeviceInfo();
-					}
-					Log.d(TAG, "chosen Ntype : " + chosenNType + ", net.type="
-							+ net.type);
-					if (chosenNType == net.type) {
-						setUseSSL(qrData.useSSL);
-					}
-				}
-				break;
-			case Router.MsgId.GET_DEVICE_INFO:
-				dev = (DeviceInfo) msg.obj;
-				if (connMgrService != null) {
-					connMgrService.setDeviceInfo(dev);
-				}
-				break;
-			case Router.MsgId.SET_CONNECTION_INFO:
-				Log.d(TAG, "SET_CONNECTION_INFO");
-				if (qrData != null && chosenNType != NetInfo.NoNet) {
-					NetInfo cn = connNets[chosenNType];
-					if (isLeader) {
-						DeviceInfo devv = new DeviceInfo(null, cn.addr, null);
-						if (connMgrService != null)
-							connMgrService.startPeerSearch(devv, -1);
-					} else {
-						DeviceInfo devv = new DeviceInfo(null, qrData.addr,
-								null);
-						if (connMgrService != null)
-							connMgrService.startPeerSearch(devv, -1);
-					}
-				}
-				break;
-			case Router.MsgId.SEARCH_START:
-				Log.d(TAG, "SEARCH_START1");
-				if (!isLeader && qrData != null && chosenNType != NetInfo.NoNet) {
-					Log.d(TAG, "group member search started, exit connector");
-					Closed = true;
-					if (connMgrService != null) {
-						connMgrService.onConnectorDestroy();
-					}
-					finish();
-				}
-				break;
+			}
+			// dont check & limit to leader, since user may have not
+			// chosen yet.
+			// simply update GUI for all, it will not show foe member
+			// if (isLeader) {
+			netConnectedAtLeader(nets);
+			// }
+			if (connMgrService != null) {
+				connMgrService.getActiveNetwork();
 			}
 		}
-	};
+	}
+	
+	public void onGetActiveNetwork(NetInfo net) {
+		if (Closed)
+			return;
+		Log.d(TAG, "GET_ACTIVE_NETWORK");
+		Log.d(TAG, "chosen Ntype : " + chosenNType);
+
+		if (net != null) { 
+			if (actNetType != NetInfo.NoNet &&
+					connNets[actNetType] != null && net.name != null && net.name.equals(connNets[actNetType].name)) {
+				return;
+			}
+			actNetType = net.type;
+			if (isLeader && chosenNType == actNetType) {
+				netActivatedAtLeader(net);
+			}
+			if (connMgrService != null) {
+				connMgrService.getDeviceInfo();
+			}
+			/*
+			 * Log.d(TAG, "chosen Ntype : " +
+			 * chosenNType+", net.type="+net.type); if (chosenNType ==
+			 * net.type) { setUseSSL(qrData.useSSL); }
+			 */
+		}
+
+	}
+	
+	public void onNetworkConnected(NetInfo net) {
+		if (Closed)
+			return;
+		Log.d(TAG, "NETWORK_CONNECTED");
+		connNets[net.type] = net;
+		NetInfo[] nets = new NetInfo[] { net };
+		if (isLeader) {
+			netConnectedAtLeader(nets);
+		}
+		Log.d(TAG, "activateNet type=" + net.type);
+		if (net.type == chosenNType) {
+			if (connMgrService != null)
+				connMgrService.activateNetwork(net);
+		}
+
+	}
+	
+	public void onNetworkDisconnected(NetInfo net) {
+		if (Closed)
+			return;
+		Log.d(TAG, "NETWORK_DISCONNECTED");
+		connNets[net.type] = null;
+		if (isLeader) {
+			netDisconnectedAtLeader(net);
+		}
+		if (actNetType == net.type) {
+			actNetType = NetInfo.NoNet;
+		}
+
+	}
+	
+	public void onNetworkActivated(NetInfo net) {
+		if (Closed)
+			return;
+		Log.d(TAG, "ACTIVATE_NETWORK");
+		if (net != null) {
+			if (actNetType != NetInfo.NoNet &&
+					connNets[actNetType] != null && net.name != null && net.name.equals(connNets[actNetType].name)) {
+				return;
+			}
+			actNetType = net.type;
+			if (isLeader && chosenNType == actNetType) {
+				netActivatedAtLeader(net);
+			}
+			if (connMgrService != null) {
+				connMgrService.getDeviceInfo();
+			}
+			Log.d(TAG, "chosen Ntype : " + chosenNType + ", net.type="
+					+ net.type);
+			if (chosenNType == net.type) {
+				setUseSSL(qrData.useSSL);
+			}
+		}
+
+	}
+	
+	public void onGetDeviceInfo(DeviceInfo dev) {
+		
+	}
+	
+	public void onSetConnectionInfo() {
+		if (Closed)
+			return;
+		Log.d(TAG, "SET_CONNECTION_INFO");
+		if (qrData != null && chosenNType != NetInfo.NoNet) {
+			NetInfo cn = connNets[chosenNType];
+			if (isLeader) {
+				DeviceInfo devv = new DeviceInfo(null, cn.addr, null);
+				if (connMgrService != null)
+					connMgrService.startPeerSearch(devv, -1);
+			} else {
+				DeviceInfo devv = new DeviceInfo(null, qrData.addr,
+						null);
+				if (connMgrService != null)
+					connMgrService.startPeerSearch(devv, -1);
+			}
+		}
+
+	}
+	
+	public void onSearchStart(DeviceInfo leader) {
+		if (Closed)
+			return;
+		Log.d(TAG, "SEARCH_START1");
+		if (!isLeader && qrData != null && chosenNType != NetInfo.NoNet) {
+			Log.d(TAG, "group member search started, exit connector");
+			Closed = true;
+			if (connMgrService != null) {
+				connMgrService.onConnectorDestroy();
+			}
+			finish();
+			if (nfcIntent != null) { //member connects thru NFC, bring up CnnMgr
+				Intent intent = new Intent(
+						Router.ACTION_CONNECTION_MANAGEMENT);
+				startActivity(intent);
+			}
+		}
+
+	}
+	
+	public void onError(String errMsg) {
+		if (Closed)
+			return;
+		Toast.makeText(this, "Error : " + errMsg, Toast.LENGTH_LONG)
+				.show();
+		Log.e(TAG, errMsg);
+	}
+	
+	public void onGetConnectionInfo(){
+		
+	}
 
 	void netConnectedAtLeader(NetInfo[] nets) {
 		for (NetInfo net : nets) {
@@ -912,6 +1035,25 @@ public class ConnectorActivity extends Activity {
 			Log.e(TAG, "Could not encode barcode", e);
 		} catch (IllegalArgumentException e) {
 			Log.e(TAG, "Could not encode barcode", e);
+		}
+		//init NFC transfer
+		if (mNfcAdapter != null) {
+			Log.d(TAG, "init NFC transfer");
+	        initNfcTransfer(qrData);
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	void initNfcTransfer(QRCodeData qrData) {
+		if (mNfcAdapter != null && mNfcAdapter.isEnabled() && useNFC) {
+			NdefMessage msg = new NdefMessage(
+					new NdefRecord[] { new NdefRecord(
+							NdefRecord.TNF_MIME_MEDIA,
+							"application/com.xconns.peerdevicenet.connector"
+									.getBytes(Charset.forName("US-ASCII")),
+							new byte[0], qrData.encode().getBytes(
+									Charset.forName("US-ASCII"))) });
+			mNfcAdapter.setNdefPushMessage(msg, this);
 		}
 	}
 

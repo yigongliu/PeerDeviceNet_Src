@@ -50,7 +50,7 @@
     <string name="summary_auto_conn">Automatically connect to devices found during search</string>
     <string name="auto_accept">Automatic connection acceptance</string>
     <string name="summary_auto_accept">Automatically accept connections from devices found during search</string>
-    <string name="use_ssl">Encrypt connnection for security</string>
+    <string name="use_ssl">Encrypt device connnections for security</string>
     <string name="summary_use_ssl">Unencrypt for better connectivity and faster transfer</string>
     <string name="search_timeout">Device search timeout</string>
     <string name="live_timeout">Peer liveness checking timeout</string>
@@ -134,28 +134,30 @@
     
     <!-- ctor related -->
 	<string name="title_activity_ctor">PeerConnector</string>
-    <string name="use_qrconn">Connect by using camera scanning QR code</string>
+    <string name="use_qrconn">Connect by using NFC/Beam or camera scanning QR code</string>
     <string name="use_autoconn">Connect by network search</string>
     <string name="leader_label">Leader</string>
-    <string name="leader_info">As leader, you will choose and setup network and generate QR code picture</string>
+    <string name="leader_info">As leader, you will choose and setup network; generate QR code picture and start NFC transmit</string>
     <string name="member_label">Member</string>
-    <string name="member_info">As a member, you will use rear or front camera to scan leader\'s QR code to connect to leader and other peers</string>
+    <string name="member_info">As a member, you will either use rear or front camera to scan leader\'s QR code or tap your device with leader to connect to leader and other peers</string>
     <string name="autofind_label">Auto search and connect</string>
     <string name="autofind_info">Auto search peers by network multicast, which could fail since some public WiFi block it</string>
     <string name="qrcode_label">QR code image</string>
-    <string name="ntypes_label">Choose network and create QR code</string>
-    <string name="use_ssl_label">Encrypt connnection for security</string>
+    <string name="keep_qrcode">Please keep QR code image visible until all peer devices connect</string>
+    <string name="ntypes_label">Choose network, create QR code and start NFC transmit</string>
+    <string name="use_nfc_label">Enable NFC / Android Beam to send connection info</string>
+    <string name="use_ssl_label">Encrypt device connnections for security</string>
     <string name="use_ssl_info">Encrypted connections are safer in public WiFi. Unencrypted connections provide better connectivity and faster transfer</string>
     <string name="wifi_label">Wi-Fi</string>
     <string name="wifi_info">Use external Wi-Fi router for connection, which could fail since some public Wi-Fi blocks device-device connection. Click to configure</string>
     <string name="wifi_direct_label">Wi-Fi Direct</string>
     <string name="wifi_direct_info">Create Wi-Fi Direct hotspot to connect peers. Don\'t need external Wi-Fi. Click to configure</string>
     <string name="wifi_hotspot_label">Mobile hotspot</string>
-    <string name="wifi_hotspot_info">Use phone\'s mobile hotspot service. Don\'t need external Wi-Fi. Click to configure</string>
+    <string name="wifi_hotspot_info">Use device\'s mobile hotspot to connect peers. Don\'t need external Wi-Fi. Click to configure</string>
     <string name="wifi_conn_fail_title">Wifi Connection Failed</string>
 	<string name="wifi_conn_fail_msg1">Failed to connect to </string>
 	<string name="wifi_conn_fail_msg2"> . Please set up WiFi connection manually.</string>
-	<string name="connector">Connect by Camera/QRCode</string>
+	<string name="connector">Connect by NFC/Beam or Camera/QRCode</string>
 	<string name="conn_prog_msg">Configure and connect to WiFi network</string>
 	<string name="done">Done</string>
 	<string name="enter">Enter</string>

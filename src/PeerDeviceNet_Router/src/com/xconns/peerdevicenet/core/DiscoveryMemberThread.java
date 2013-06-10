@@ -44,7 +44,7 @@ public class DiscoveryMemberThread extends Thread {
 
 	private NetInfo netInfo = null;
 	private DeviceInfo mDeviceInfo = null;
-	private HashSet<String> foundDevices = new HashSet<String>();
+	//private HashSet<String> foundDevices = new HashSet<String>();
 
 	//private SecureSocketFactory sockFactory = null;
 	private PlainSocketFactory sockFactory = null;
@@ -104,11 +104,11 @@ public class DiscoveryMemberThread extends Thread {
 	void foundDevice(DeviceInfo dev, boolean useSSL) {
 		if (!mDeviceInfo.addr.equals(dev.addr)) {
 			Log.d(TAG, "find new peer from " + dev.addr);
-			if (foundDevices.size() > 0 && foundDevices.contains(dev.addr))
-				return;
+			//if (foundDevices.size() > 0 && foundDevices.contains(dev.addr))
+			//	return;
 			Log.d(TAG, "found new device: " + dev.name + " : " + dev.addr
 					+ " : " + dev.port);
-			foundDevices.add(dev.addr);
+			//foundDevices.add(dev.addr);
 			handler.onSearchFoundDevice(dev, useSSL);
 		} else {
 			Log.d(TAG, "found myself, drop it");

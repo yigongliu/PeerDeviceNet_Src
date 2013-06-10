@@ -296,25 +296,29 @@ public class WifiTransport implements Transport {
 					isWifiEnabled = true;
 				}
 				handler.onTransportEnabled(NetInfo.WiFi, isWifiEnabled);
-				updateNetworkSettings();
+				updateNetworkSettings(null);
 			} else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
 				Log.d(TAG, "recv CONNECTIVITY_ACTION");
 				NetworkInfo ni = (NetworkInfo) intent
 						.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
 				Log.d(TAG, "recv CONNECTIVITY_ACTION: " + ni.toString());
 				if (ni.getType() == ConnectivityManager.TYPE_WIFI) {
-					updateNetworkSettings();
+					updateNetworkSettings(ni);
 				}
 			}
 		}
 
 	};
 
-	void updateNetworkSettings() {
-		NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+	void updateNetworkSettings(NetworkInfo ni0) {
+		NetworkInfo wifiInfo = ni0;
+		if (wifiInfo == null) {
+			wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		}
 
 		// check if connected
-		if (!wifiInfo.isAvailable() || !wifiInfo.isConnectedOrConnecting()) {
+		if (!wifiInfo.isAvailable() || wifiInfo.getState() == NetworkInfo.State.DISCONNECTED
+				|| wifiInfo.getState() == NetworkInfo.State.DISCONNECTING/*!wifiInfo.isConnectedOrConnecting()*/) {
 			Log.d(TAG, "WIFI not connected");
 			if (netInfo != null) {
 				reset(false);

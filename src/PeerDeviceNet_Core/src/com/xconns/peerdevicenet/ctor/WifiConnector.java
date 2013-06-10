@@ -93,8 +93,11 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 				// active
 				List<WifiConfiguration> existingConfigs = wifiManager
 						.getConfiguredNetworks();
+				String name2 = ConnectorActivity.trimQuote(wifiData.ssid.trim());
+				String name1 = null;
 				for (WifiConfiguration ec : existingConfigs) {
-					if (ec.SSID.equals(wifiData.ssid)) {
+					name1 = ConnectorActivity.trimQuote(ec.SSID.trim());
+					if (name1.equals(name2)) {
 						if (wifiManager.enableNetwork(ec.networkId, true)) {
 							Log.i(TAG, "Associating to existing network " + ec.SSID);
 							wifiManager.saveConfiguration();
@@ -117,7 +120,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 	@Override
 	protected void onPostExecute(Boolean success) {
 		if (!success) {
-			ctor.mHandler.sendEmptyMessage(ConnectorActivity.WIFI_CONNECTOR_FAIL_MSG);
+			ctor.showDialog(ctor.WIFI_CONNECTOR_FAIL_DIALOG);
 		}
 	}
 

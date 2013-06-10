@@ -16,12 +16,10 @@
 
 package com.xconns.peerdevicenet.cm;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import android.app.Service;
 import android.content.Intent;
@@ -62,16 +60,15 @@ public class ConnectionManagerService extends Service {
 
 	// -- data related to networks --
 	NetInfo actNet = null;
-	Object actNetLock = new Object();
 	HashMap<String, NetInfo> connNets = new HashMap<String, NetInfo>();
 
 	// -- data related to device connection setup --
-	Map<String, DeviceInfo> discoveredDevices = new ConcurrentHashMap<String, DeviceInfo>();
-	Map<String, DeviceInfo> rejectedPeers = new ConcurrentHashMap<String, DeviceInfo>();
+	Map<String, DeviceInfo> discoveredDevices = new HashMap<String, DeviceInfo>();
+	Map<String, DeviceInfo> rejectedPeers = new HashMap<String, DeviceInfo>();
 	Set<String> connectingPeers = new HashSet<String>();
 	Set<String> connectedPeers = new HashSet<String>();
-	Map<String, DeviceInfo> askingPeers = new ConcurrentHashMap<String, DeviceInfo>();
-	volatile DeviceInfo searchLeader = null;
+	Map<String, DeviceInfo> askingPeers = new HashMap<String, DeviceInfo>();
+	DeviceInfo searchLeader = null;
 
 	boolean mAutoAccept = false;
 	boolean mAutoConn = false;
@@ -273,11 +270,7 @@ public class ConnectionManagerService extends Service {
 				connMgr.onGetNetworks(connNets.values().toArray(new NetInfo[0]));
 			}
 			if (ctor != null) {
-				NetInfo[] nets = connNets.values().toArray(new NetInfo[0]);
-				Message msg = ctor.mHandler
-						.obtainMessage(Router.MsgId.GET_NETWORKS);
-				msg.obj = nets;
-				ctor.mHandler.sendMessage(msg);
+				ctor.onGetNetworks(connNets.values().toArray(new NetInfo[0]));
 			}
 		} else {
 			if (connClient != null) {
@@ -291,25 +284,18 @@ public class ConnectionManagerService extends Service {
 	}
 
 	NetInfo getActNet() {
-		synchronized (actNetLock) {
-			return actNet;
-		}
+		return actNet;
 	}
 
 	public void getActiveNetwork() {
 		NetInfo an = null;
-		synchronized (actNetLock) {
-			an = actNet;
-		}
+		an = actNet;
 		if (an != null) {
 			if (connMgr != null) {
 				connMgr.onGetActiveNetwork(an);
 			}
 			if (ctor != null) {
-				Message msg = ctor.mHandler
-						.obtainMessage(Router.MsgId.GET_ACTIVE_NETWORK);
-				msg.obj = an;
-				ctor.mHandler.sendMessage(msg);
+				ctor.onGetActiveNetwork(an);
 			}
 		} else {
 			connClient.getActiveNetwork();
@@ -318,14 +304,10 @@ public class ConnectionManagerService extends Service {
 
 	public void activateNetwork(NetInfo net) {
 		NetInfo an = null;
-		synchronized (actNetLock) {
-			an = actNet;
-		}
+		an = actNet;
 		Log.d(TAG, "activateNetwork: ");
 		if (net == null) {
-			synchronized (actNetLock) {
-				actNet = null;
-			}
+			actNet = null;
 			connMgr.onNetworkActivated(null);
 			return;
 		}
@@ -337,493 +319,558 @@ public class ConnectionManagerService extends Service {
 				connMgr.onNetworkActivated(net);
 			}
 			if (ctor != null) {
-				Message msg = ctor.mHandler
-						.obtainMessage(Router.MsgId.ACTIVATE_NETWORK);
-				msg.obj = net;
-				ctor.mHandler.sendMessage(msg);
+				ctor.onNetworkActivated(net);
 			}
 		}
 	}
 
 	RouterConnectionClient.ConnectionHandler connHandler = new RouterConnectionClient.ConnectionHandler() {
 		public void onError(String errInfo) {
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.ERROR);
-					msg.obj = errInfo;
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.ERROR);
-					msg.obj = errInfo;
-					ctor.mHandler.sendMessage(msg);
-				}
-			} else {
-				// although user moved away from ConnMgr activity now
-				// we need their permission for this, so fire a notificiation
-				Log.d(TAG, "No ConectionManager active, dropped Error msg");
-			}
+			Message msg = mHandler.obtainMessage(Router.MsgId.ERROR);
+			msg.obj = errInfo;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onConnected(DeviceInfo dev) {
-			connectingPeers.remove(dev.addr);
-			connectedPeers.add(dev.addr);
-			DeviceInfo device = discoveredDevices.get(dev.addr);
-			if (device == null) {
-				// should we prompt users? now simply add it for now
-				discoveredDevices.put(dev.addr, dev);
-				device = dev;
-			} else {
-				// local device may miss some info
-				if (dev.name != null)
-					device.name = dev.name;
-				if (dev.port != null)
-					device.port = dev.port;
-			}
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.CONNECTED);
-				msg.obj = device;
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// user moved away from ConnMgrActivity; send a notification
-			}
-			Log.d(TAG, "a device connected");
+			Message msg = mHandler.obtainMessage(Router.MsgId.CONNECTED);
+			msg.obj = dev;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onDisconnected(DeviceInfo dev) {
-			DeviceInfo device = discoveredDevices.get(dev.addr);
-			connectedPeers.remove(dev.addr);
-			discoveredDevices.remove(dev.addr);
-			rejectedPeers.remove(dev.addr);
-			if (device == null)
-				return;
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.DISCONNECTED);
-				msg.obj = dev;
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// user move away from ConnMgrActivity, send a notificiation
-			}
-			Log.d(TAG, "a device disconnected");
+			Message msg = mHandler.obtainMessage(Router.MsgId.DISCONNECTED);
+			msg.obj = dev;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onGetDeviceInfo(DeviceInfo device) {
-			Log.d(TAG, "onGetDeviceInfo: " + device.toString());
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.GET_DEVICE_INFO);
-				msg.obj = device;
-				connMgr.mHandler.sendMessage(msg);
-			}
-			if (ctor != null) {
-				Message msg = ctor.mHandler
-						.obtainMessage(Router.MsgId.GET_DEVICE_INFO);
-				msg.obj = device;
-				ctor.mHandler.sendMessage(msg);
-			}
-			/*
-			 * else { // the req for GetDeviceInfo should come from
-			 * ConnMgrActivity; // since it is gone, drop it. Log.d(TAG,
-			 * "No ConectionManager active, dropped GetDeviceInfo"); }
-			 */
+			Message msg = mHandler.obtainMessage(Router.MsgId.GET_DEVICE_INFO);
+			msg.obj = device;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onGetPeerDevices(DeviceInfo[] devices) {
-			if (devices == null) {
-				return;
-			}
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.GET_CONNECTED_PEERS);
-				ArrayList<DeviceInfo> devs = new ArrayList<DeviceInfo>();
-				for (DeviceInfo d : devices) {
-					if (!askingPeers.containsKey(d.addr)) {
-						devs.add(d);
-					}
-				}
-				msg.obj = devs.toArray(new DeviceInfo[0]);
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// user moved away from ConnMgr activity now
-				// drop it
-				Log.d(TAG,
-						"No ConectionManager active, dropped GetPeerDevices msg");
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.GET_CONNECTED_PEERS);
+			msg.obj = devices;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onConnecting(DeviceInfo device, byte[] token) {
-			Log.d(TAG, "peer " + device.addr + " sends connecting");
-
-			Log.d(TAG, "onConnecting searchLeader=" + searchLeader);
-			// check if trying to conn to self
-			if (device.addr != null && device.addr.equals(mDevice.addr)) {
-				Log.d(TAG, "CONN_TO_SELF: deny self connection");
-				connClient.denyConnection(device,
-						Router.ConnFailureCode.FAIL_CONN_SELF);
-				return;
-			}
-
-			Log.d(TAG, "----- 1");
-			// check if conn attempt already started
-			if (connectingPeers.contains(device.addr)
-					&& mDevice.addr.compareTo(device.addr) < 0) {
-				Log.d(TAG, "CONN_EXIST: deny peer's connection attempt from: "
-						+ device.addr); // rejectedPeers.put(device.addr,
-										// device);
-				connClient.denyConnection(device,
-						Router.ConnFailureCode.FAIL_CONN_EXIST);
-				return;
-			}
-
-			Log.d(TAG, "----- 2");
-
-			// see if connecting req can be handled automatically
-			// auto accept for wifi-direct
-			int netType = -1;
-			synchronized (actNetLock) {
-				if (actNet != null)
-					netType = actNet.type;
-			}
-			if ((mAutoAccept || connectorSessionActive() // searchLeader != null
-					|| netType == NetInfo.WiFiDirect || netType == NetInfo.WiFiHotspot)
-					&& token != null) {
-				String tokStr = new String(token, 0, token.length);
-				if (!(securityToken.equals(tokStr))) {
-					Log.d(TAG,
-							"PIN_MISMATCH: deny peer's connection attempt from: "
-									+ device.addr + ", token: " + tokStr);
-					connClient.denyConnection(device,
-							Router.ConnFailureCode.FAIL_PIN_MISMATCH);
-					return;
-				}
-				if (!(discoveredDevices.containsKey(device.addr))) {
-					Log.d(TAG,
-							"UNKNOWN_PEER: deny peer's connection attempt from: "
-									+ device.addr + ", token: " + tokStr);
-					rejectedPeers.put(device.addr, device);
-					connClient.denyConnection(device,
-							Router.ConnFailureCode.FAIL_UNKNOWN_PEER);
-					return;
-				}
-
-				if (!connectingPeers.contains(device.addr))
-					connectingPeers.add(device.addr);
-				Log.d(TAG, "accept peer's connection attempt from: "
-						+ device.addr);
-				connClient.acceptConnection(device);
-				return;
-			}
-			Log.d(TAG, "----- 3");
-
-			// up to here, we need user interaction for connecting
-			if (connMgr != null
-			/* && Utils.isConnMgrAtTop(ConnectionManagerService.this) */) {
-				askingPeers.put(device.addr, device);
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.CONNECTING);
-				msg.obj = device;
-				connMgr.mHandler.sendMessage(msg);
-				Log.d(TAG, "----- 4");
-
-			} else {
-				// user moved away from ConnMgr activity now
-				// should fire a notificiation
-				Log.d(TAG,
-						"No ConectionManager active, deny incoming peer connecting msg");
-				connClient.denyConnection(device,
-						Router.ConnFailureCode.FAIL_CONNMGR_INACTIVE);
-			}
+			Message msg = mHandler.obtainMessage(Router.MsgId.CONNECTING);
+			msg.obj = new Object[] { device, token };
+			mHandler.sendMessage(msg);
 		}
 
 		public void onConnectionFailed(DeviceInfo device, int rejectCode) {
-			if (rejectCode == Router.ConnFailureCode.FAIL_CONN_EXIST) {
-				// in case peer found conn exist and failed this conn attempt;
-				// do not clean up as following, otherwise lose data
-				return;
-			}
-			connectingPeers.remove(device.addr);
-			connectedPeers.remove(device.addr); // in case peer terminate early
-			if (rejectCode == Router.ConnFailureCode.FAIL_REJECT_BY_USER
-					|| rejectCode == Router.ConnFailureCode.FAIL_PIN_MISMATCH) {
-				discoveredDevices.remove(device.addr);
-			}
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.CONNECTION_FAILED);
-				msg.arg1 = rejectCode;
-				msg.obj = device;
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// although user moved away from ConnMgr activity now
-				// we need their permission for this, so fire a notificiation
-				Log.d(TAG,
-						"No ConectionManager active, dropped ConnectionFailed msg");
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.CONNECTION_FAILED);
+			msg.obj = new Object[] { device, rejectCode };
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onSearchStart(DeviceInfo groupLeader) {
-			Log.d(TAG, "onSearchStart: " + groupLeader);
-			searchLeader = groupLeader;
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.SEARCH_START);
-					msg.obj = groupLeader;
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.SEARCH_START);
-					msg.obj = groupLeader;
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler.obtainMessage(Router.MsgId.SEARCH_START);
+			msg.obj = groupLeader;
+			mHandler.sendMessage(msg);
 		}
 
 		public void onSearchFoundDevice(DeviceInfo dev, boolean uSSL) {
-			Log.d(TAG, "onSearchFoundDevice: " + dev);
-			if (discoveredDevices.containsKey(dev.addr)) {
-				return;
-			}
-			if (useSSL != uSSL) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(ConnectionManager.SEARCH_FOUND_DEVICE_DIFF_SSL_FLAG);
-					msg.arg1 = uSSL ? 1 : 0;
-					msg.obj = dev;
-					connMgr.mHandler.sendMessage(msg);
-				} else {
-					//
-					Log.d(TAG,
-							"No ConectionManager active, dropped [Peer has diff SSL settings] msg");
-				}
-				return;
-			}
-			// see if discovered devices should be connected auto
-			int netType = -1;
-			synchronized (actNetLock) {
-				if (actNet != null)
-					netType = actNet.type;
-			}
-			discoveredDevices.put(dev.addr, dev);
-			if ((mAutoConn || connectorSessionActive() // searchLeader !=
-														// null
-					|| netType == NetInfo.WiFiDirect || netType == NetInfo.WiFiHotspot)
-					&& !connectingPeers.contains(dev.addr)
-					&& !askingPeers.containsKey(dev.addr)
-					&& !connectedPeers.contains(dev.addr)
-					/*
-					&& (mDevice.addr.compareTo(dev.addr) < 0 || rejectedPeers
-							.containsKey(dev.addr))*/) {
-				connectingPeers.add(dev.addr);
-				connClient.connect(dev, securityToken.getBytes(), connTimeout);
-				if (rejectedPeers.containsKey(dev.addr)) {
-					rejectedPeers.remove(dev.addr);
-				}
-			}
-			
-
-			if (connMgr != null) {
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.SEARCH_FOUND_DEVICE);
-				msg.obj = dev;
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// although user moved away from ConnMgr activity now
-				// we need their permission for this, so fire a notificiation
-				Log.d(TAG,
-						"No ConectionManager active, dropped SearchFoundDevice msg");
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.SEARCH_FOUND_DEVICE);
+			msg.obj = new Object[] { dev, useSSL };
+			mHandler.sendMessage(msg);
 		}
 
 		public void onSearchComplete() {
-			if (scanLeftOver > 0) {
-				scanLeftOver--;
-				return;
-			}
-			searchLeader = null;
-			if (connMgr != null) {
-				scanStarted--;
-				Message msg = connMgr.mHandler
-						.obtainMessage(Router.MsgId.SEARCH_COMPLETE);
-				connMgr.mHandler.sendMessage(msg);
-			} else {
-				// although user moved away from ConnMgr activity now
-				// we need their permission for this, so fire a notificiation
-				Log.d(TAG,
-						"No ConectionManager active, dropped SearchComplete msg");
-			}
+			Message msg = mHandler.obtainMessage(Router.MsgId.SEARCH_COMPLETE);
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onGetNetworks(NetInfo[] nets) {
-			Log.d(TAG, "onGetNetworks: "
-					+ (nets != null ? nets.length : "null"));
-			connNets.clear();
-			for (NetInfo net : nets) {
-				connNets.put(net.name, net);
-			}
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.GET_NETWORKS);
-					msg.obj = nets;
-					connMgr.mHandler.sendMessage(msg);
-					Log.d(TAG, "onGetNetworks: proc1");
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.GET_NETWORKS);
-					msg.obj = nets;
-					ctor.mHandler.sendMessage(msg);
-					Log.d(TAG, "onGetNetworks: proc2");
-				}
-			}
-			Log.d(TAG, "onGetNetworks finished");
+			Message msg = mHandler.obtainMessage(Router.MsgId.GET_NETWORKS);
+			msg.obj = nets;
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onGetActiveNetwork(NetInfo net) {
-			Log.d(TAG, "onGetActiveNetwork");
-			synchronized (actNetLock) {
-				actNet = net;
-			}
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.GET_ACTIVE_NETWORK);
-					msg.obj = net;
-					connMgr.mHandler.sendMessage(msg);
-					Log.d(TAG, "onGetActiveNetwork, proc1");
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.GET_ACTIVE_NETWORK);
-					msg.obj = net;
-					ctor.mHandler.sendMessage(msg);
-					Log.d(TAG, "onGetActiveNetwork, proc2");
-				}
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.GET_ACTIVE_NETWORK);
+			msg.obj = net;
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onNetworkConnected(NetInfo net) {
-			Log.d(TAG, "onNetworkConnected: "/* +net.toString() */);
-			if (connNets.containsKey(net.name))
-				return;
-			connNets.put(net.name, net);
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.NETWORK_CONNECTED);
-					msg.obj = net;
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.NETWORK_CONNECTED);
-					msg.obj = net;
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.NETWORK_CONNECTED);
+			msg.obj = net;
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onNetworkDisconnected(NetInfo net) {
-			Log.d(TAG, "onNetworkDisconnected: " + net.toString());
-			if (!connNets.containsKey(net.name))
-				return;
-			connNets.remove(net.name);
-			discoveredDevices.clear();
-			connectingPeers.clear();
-			connectedPeers.clear();
-			rejectedPeers.clear();
-			askingPeers.clear();
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.NETWORK_DISCONNECTED);
-					msg.obj = net;
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.NETWORK_DISCONNECTED);
-					msg.obj = net;
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.NETWORK_DISCONNECTED);
+			msg.obj = net;
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onNetworkActivated(NetInfo net) {
-			Log.d(TAG, "onNetworkActivated: " + net.toString());
-			synchronized (actNetLock) {
-				actNet = net;
-			}
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.ACTIVATE_NETWORK);
-					msg.obj = net;
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.ACTIVATE_NETWORK);
-					msg.obj = net;
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler.obtainMessage(Router.MsgId.ACTIVATE_NETWORK);
+			msg.obj = net;
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onSetConnectionInfo() {
-			Log.d(TAG, "finish SetConnectionInfo()");
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Log.d(TAG, "send SetConnectionInfo() to connMgr");
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.SET_CONNECTION_INFO);
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Log.d(TAG, "send SetConnectionInfo() to ctorAct");
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.SET_CONNECTION_INFO);
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.SET_CONNECTION_INFO);
+			mHandler.sendMessage(msg);
 		}
 
 		@Override
 		public void onGetConnectionInfo(String devName, boolean uSSL,
 				int liveTime, int connTime, int searchTime) {
-			Log.d(TAG, "onGetConnectionInfo()");
-			useSSL = uSSL;
-			if (connMgr != null || ctor != null) {
-				if (connMgr != null) {
-					Message msg = connMgr.mHandler
-							.obtainMessage(Router.MsgId.GET_CONNECTION_INFO);
-					msg.obj = new ConnInfo(devName, useSSL, liveTime, connTime,
-							searchTime);
-					connMgr.mHandler.sendMessage(msg);
-				}
-				if (ctor != null) {
-					Message msg = ctor.mHandler
-							.obtainMessage(Router.MsgId.GET_CONNECTION_INFO);
-					msg.obj = new ConnInfo(devName, useSSL, liveTime, connTime,
-							searchTime);
-					ctor.mHandler.sendMessage(msg);
-				}
-			}
+			Message msg = mHandler
+					.obtainMessage(Router.MsgId.GET_CONNECTION_INFO);
+			ConnInfo ci = new ConnInfo(devName, uSSL, liveTime, connTime,
+					searchTime);
+			msg.obj = ci;
+			mHandler.sendMessage(msg);
 		}
 
 	};
-	
+
+	/**
+	 * Handler of incoming messages from service.
+	 */
+	Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			DeviceInfo dev = null;
+			Object[] params = null;
+			NetInfo net = null;
+			switch (msg.what) {
+			// handle msgs for scan
+			case Router.MsgId.SEARCH_FOUND_DEVICE:
+				params = (Object[]) msg.obj;
+				dev = (DeviceInfo) params[0];
+				boolean uSSL = (Boolean) params[1];
+				Log.d(TAG, "onSearchFoundDevice: " + dev);
+				if (discoveredDevices.containsKey(dev.addr)) {
+					Log.d(TAG, "already discovered, drop it");
+					return;
+				}
+				if (useSSL != uSSL) {
+					if (connMgr != null) {
+						connMgr.onSearchFoundDiffSSLFlag(dev, uSSL);
+					} else {
+						//
+						Log.d(TAG,
+								"No ConectionManager active, dropped [Peer has diff SSL settings] msg");
+					}
+					return;
+				}
+				Log.d(TAG, "---a1");
+				// see if discovered devices should be connected auto
+				int netType = -1;
+				if (actNet != null)
+					netType = actNet.type;
+				discoveredDevices.put(dev.addr, dev);
+				Log.d(TAG, "---a2");
+				if ((mAutoConn || connectorSessionActive() // searchLeader !=
+															// null
+						|| netType == NetInfo.WiFiDirect || netType == NetInfo.WiFiHotspot)
+						&& !connectingPeers.contains(dev.addr)
+						&& !askingPeers.containsKey(dev.addr)
+						&& !connectedPeers.contains(dev.addr)
+				/*
+				 * && (mDevice.addr.compareTo(dev.addr) < 0 || rejectedPeers
+				 * .containsKey(dev.addr))
+				 */) {
+					Log.d(TAG, "connect to client: " + dev.addr);
+					connectingPeers.add(dev.addr);
+					connClient.connect(dev, securityToken.getBytes(),
+							connTimeout);
+					if (rejectedPeers.containsKey(dev.addr)) {
+						rejectedPeers.remove(dev.addr);
+					}
+				}
+
+				Log.d(TAG, "----- a3");
+				if (connMgr != null) {
+					connMgr.addNearbyDevice(dev);
+				} else {
+					// although user moved away from ConnMgr activity now
+					// we need their permission for this, so fire a
+					// notificiation
+					Log.d(TAG,
+							"No ConectionManager active, dropped SearchFoundDevice msg");
+				}
+				Log.d(TAG, "---- a4");
+
+				break;
+			case Router.MsgId.SEARCH_COMPLETE:
+				if (scanLeftOver > 0) {
+					scanLeftOver--;
+					return;
+				}
+				searchLeader = null;
+				if (connMgr != null) {
+					scanStarted--;
+					connMgr.onSearchComplete();
+				} else {
+					// although user moved away from ConnMgr activity now
+					// we need their permission for this, so fire a
+					// notificiation
+					Log.d(TAG,
+							"No ConectionManager active, dropped SearchComplete msg");
+				}
+
+				break;
+			case Router.MsgId.SEARCH_START:
+				DeviceInfo groupLeader = (DeviceInfo) msg.obj;
+				Log.d(TAG, "onSearchStart: " + groupLeader);
+				searchLeader = groupLeader;
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						//connMgr.onSearchStart(groupLeader); no work here
+					}
+					if (ctor != null) {
+						ctor.onSearchStart(groupLeader);
+					}
+				}
+				break;
+			// handle msgs for connections
+			case Router.MsgId.CONNECTED:
+				dev = (DeviceInfo) msg.obj;
+				connectingPeers.remove(dev.addr);
+				connectedPeers.add(dev.addr);
+				DeviceInfo device = discoveredDevices.get(dev.addr);
+				if (device == null) {
+					// should we prompt users? now simply add it for now
+					discoveredDevices.put(dev.addr, dev);
+					device = dev;
+				} else {
+					// local device may miss some info
+					if (dev.name != null)
+						device.name = dev.name;
+					if (dev.port != null)
+						device.port = dev.port;
+				}
+				if (connMgr != null) {
+					connMgr.onConnectPeerDevice(device);
+				} else {
+					// user moved away from ConnMgrActivity; send a notification
+				}
+				Log.d(TAG, "a device connected");
+				break;
+			case Router.MsgId.DISCONNECTED:
+				dev = (DeviceInfo) msg.obj;
+				device = discoveredDevices.get(dev.addr);
+				connectedPeers.remove(dev.addr);
+				discoveredDevices.remove(dev.addr);
+				rejectedPeers.remove(dev.addr);
+				if (device == null)
+					return;
+				if (connMgr != null) {
+					connMgr.onDisconnectPeerDevice(dev);
+				} else {
+					// user move away from ConnMgrActivity, send a notificiation
+				}
+				Log.d(TAG, "a device disconnected");
+				break;
+			case Router.MsgId.GET_CONNECTED_PEERS:
+				DeviceInfo[] devices = (DeviceInfo[]) msg.obj;
+				if (devices == null) {
+					return;
+				}
+				if (connMgr != null) {
+					if (devices != null && devices.length > 0)
+						for (int i = 0; i < devices.length; i++) {
+							discoveredDevices.put(devices[i].addr,
+									devices[i]);
+							connMgr.onConnectPeerDevice(devices[i]);
+						}
+				} else {
+					// user moved away from ConnMgr activity now
+					// drop it
+					Log.d(TAG,
+							"No ConectionManager active, dropped GetPeerDevices msg");
+				}
+				break;
+			case Router.MsgId.CONNECTING:
+				params = (Object[]) msg.obj;
+				device = (DeviceInfo) params[0];
+				byte[] token = (byte[]) params[1];
+				Log.d(TAG, "peer " + device.addr + " sends connecting to me:"
+						+ mDevice.toString());
+
+				Log.d(TAG, "onConnecting searchLeader=" + searchLeader);
+				// check if trying to conn to self
+				if (device.addr != null && device.addr.equals(mDevice.addr)) {
+					Log.d(TAG, "CONN_TO_SELF: deny self connection");
+					connClient.denyConnection(device,
+							Router.ConnFailureCode.FAIL_CONN_SELF);
+					return;
+				}
+
+				Log.d(TAG, "----- 1");
+				// check if conn attempt already started
+				if (connectingPeers.contains(device.addr)
+						&& mDevice.addr.compareTo(device.addr) < 0) {
+					Log.d(TAG, "----- 1.5");
+					Log.d(TAG,
+							"CONN_EXIST: deny peer's connection attempt from: "
+									+ device.addr); // rejectedPeers.put(device.addr,
+													// device);
+					connClient.denyConnection(device,
+							Router.ConnFailureCode.FAIL_CONN_EXIST);
+					return;
+				}
+
+				Log.d(TAG, "----- 2");
+
+				// see if connecting req can be handled automatically
+				// auto accept for wifi-direct
+				netType = -1;
+				if (actNet != null)
+					netType = actNet.type;
+				if ((mAutoAccept || connectorSessionActive() // searchLeader !=
+																// null
+						|| netType == NetInfo.WiFiDirect || netType == NetInfo.WiFiHotspot)
+						&& token != null) {
+					String tokStr = new String(token, 0, token.length);
+					if (!(securityToken.equals(tokStr))) {
+						Log.d(TAG,
+								"PIN_MISMATCH: deny peer's connection attempt from: "
+										+ device.addr + ", token: " + tokStr);
+						connClient.denyConnection(device,
+								Router.ConnFailureCode.FAIL_PIN_MISMATCH);
+						return;
+					}
+					if (!(discoveredDevices.containsKey(device.addr))) {
+						Log.d(TAG,
+								"UNKNOWN_PEER: deny peer's connection attempt from: "
+										+ device.addr + ", token: " + tokStr);
+						rejectedPeers.put(device.addr, device);
+						connClient.denyConnection(device,
+								Router.ConnFailureCode.FAIL_UNKNOWN_PEER);
+						return;
+					}
+
+					if (!connectingPeers.contains(device.addr))
+						connectingPeers.add(device.addr);
+					Log.d(TAG, "accept peer's connection attempt from: "
+							+ device.addr);
+					connClient.acceptConnection(device);
+					return;
+				}
+				Log.d(TAG, "----- 3");
+
+				// up to here, we need user interaction for connecting
+				if (connMgr != null
+				/* && Utils.isConnMgrAtTop(ConnectionManagerService.this) */) {
+					askingPeers.put(device.addr, device);
+					connMgr.showConnConfirmDialog(device);
+					Log.d(TAG, "----- 4");
+
+				} else {
+					// user moved away from ConnMgr activity now
+					// should fire a notificiation
+					Log.d(TAG,
+							"No ConectionManager active, deny incoming peer connecting msg");
+					connClient.denyConnection(device,
+							Router.ConnFailureCode.FAIL_CONNMGR_INACTIVE);
+				}
+				break;
+			case Router.MsgId.CONNECTION_FAILED:
+				params = (Object[]) msg.obj;
+				device = (DeviceInfo) params[0];
+				int rejectCode = ((Integer) params[1]);
+				if (rejectCode == Router.ConnFailureCode.FAIL_CONN_EXIST) {
+					// in case peer found conn exist and failed this conn
+					// attempt;
+					// do not clean up as following, otherwise lose data
+					return;
+				}
+				connectingPeers.remove(device.addr);
+				connectedPeers.remove(device.addr); // in case peer terminate
+													// early
+				if (rejectCode == Router.ConnFailureCode.FAIL_REJECT_BY_USER
+						|| rejectCode == Router.ConnFailureCode.FAIL_PIN_MISMATCH) {
+					discoveredDevices.remove(device.addr);
+				}
+				if (connMgr != null) {
+					connMgr.onConnectionFailed(device, rejectCode);
+				} else {
+					// although user moved away from ConnMgr activity now
+					// we need their permission for this, so fire a
+					// notificiation
+					Log.d(TAG,
+							"No ConectionManager active, dropped ConnectionFailed msg");
+				}
+
+				break;
+			case Router.MsgId.GET_DEVICE_INFO:
+				device = (DeviceInfo) msg.obj;
+				Log.d(TAG, "onGetDeviceInfo: " + device.toString());
+				if (device != null && device.addr != null) {
+						mDevice.addr = device.addr;
+						mDevice.port = device.port;
+				}
+				if (connMgr != null) {
+					connMgr.onGetDeviceInfo(device);
+				}
+				if (ctor != null) {
+					ctor.onGetDeviceInfo(device);
+				}
+				/*
+				 * else { // the req for GetDeviceInfo should come from
+				 * ConnMgrActivity; // since it is gone, drop it. Log.d(TAG,
+				 * "No ConectionManager active, dropped GetDeviceInfo"); }
+				 */
+				break;
+
+			case Router.MsgId.ERROR:
+				String errInfo = (String) msg.obj;
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onError(errInfo);
+					}
+					if (ctor != null) {
+						ctor.onError(errInfo);
+					}
+				} else {
+					// although user moved away from ConnMgr activity now
+					// we need their permission for this, so fire a
+					// notificiation
+					Log.d(TAG, "No ConectionManager active, dropped Error msg: "+errInfo);
+				}
+				break;
+			case Router.MsgId.GET_NETWORKS:
+				NetInfo[] nets = (NetInfo[]) msg.obj;
+				Log.d(TAG, "onGetNetworks: "
+						+ (nets != null ? nets.length : "null"));
+				connNets.clear();
+				for (NetInfo n : nets) {
+					connNets.put(n.name, n);
+				}
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onGetNetworks(nets);
+						Log.d(TAG, "onGetNetworks: proc1");
+					}
+					if (ctor != null) {
+						ctor.onGetNetworks(nets);
+						Log.d(TAG, "onGetNetworks: proc2");
+					}
+				}
+				Log.d(TAG, "onGetNetworks finished");
+
+				break;
+			case Router.MsgId.GET_ACTIVE_NETWORK:
+				net = (NetInfo) msg.obj;
+				Log.d(TAG, "onGetActiveNetwork");
+				actNet = net;
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onGetActiveNetwork(net);
+						Log.d(TAG, "onGetActiveNetwork, proc1");
+					}
+					if (ctor != null) {
+						ctor.onGetActiveNetwork(net);
+						Log.d(TAG, "onGetActiveNetwork, proc2");
+					}
+				}
+
+				break;
+			case Router.MsgId.ACTIVATE_NETWORK:
+				net = (NetInfo) msg.obj;
+				Log.d(TAG, "onNetworkActivated: " + net.toString());
+				actNet = net;
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onNetworkActivated(net);
+					}
+					if (ctor != null) {
+						ctor.onNetworkActivated(net);
+					}
+				}
+				break;
+			case Router.MsgId.NETWORK_CONNECTED:
+				net = (NetInfo) msg.obj;
+				Log.d(TAG, "onNetworkConnected: "/* +net.toString() */);
+				if (connNets.containsKey(net.name))
+					return;
+				connNets.put(net.name, net);
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onNetworkConnected(net);
+					}
+					if (ctor != null) {
+						ctor.onNetworkConnected(net);
+					}
+				}
+				break;
+			case Router.MsgId.NETWORK_DISCONNECTED:
+				net = (NetInfo) msg.obj;
+				Log.d(TAG, "onNetworkDisconnected: " + net.toString());
+				if (!connNets.containsKey(net.name))
+					return;
+				connNets.remove(net.name);
+				discoveredDevices.clear();
+				connectingPeers.clear();
+				connectedPeers.clear();
+				rejectedPeers.clear();
+				askingPeers.clear();
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onNetworkDisconnected(net);
+					}
+					if (ctor != null) {
+						ctor.onNetworkDisconnected(net);
+					}
+				}
+
+				break;
+			case Router.MsgId.SET_CONNECTION_INFO:
+				Log.d(TAG, "finish SetConnectionInfo()");
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						getConnectionInfo();
+					}
+					if (ctor != null) {
+						Log.d(TAG, "send SetConnectionInfo() to ctorAct");
+						ctor.onSetConnectionInfo();
+					}
+				}
+
+				break;
+			case Router.MsgId.GET_CONNECTION_INFO:
+				ConnInfo ci = (ConnInfo) msg.obj;
+				Log.d(TAG, "onGetConnectionInfo()");
+				useSSL = ci.useSSL;
+				if (connMgr != null || ctor != null) {
+					if (connMgr != null) {
+						connMgr.onGetConnectionInfo(ci);
+					}
+					if (ctor != null) {
+						ctor.onGetConnectionInfo();
+					}
+				}
+
+				break;
+			default:
+				Log.d(TAG, "unhandled msg: " + Router.MsgName(msg.what));
+				super.handleMessage(msg);
+			}
+		}
+	};
+
 }

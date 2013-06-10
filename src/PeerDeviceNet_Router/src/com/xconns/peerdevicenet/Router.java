@@ -25,7 +25,7 @@ package com.xconns.peerdevicenet;
  */
 public class Router {
 	//service startup intents
-	//for starting ConneCONNECTOR service
+	//for starting router service
 	public static final String ACTION_SERVICE = "com.xconns.peerdevicenet.Service";
 	public static final String ACTION_CONNECTION_SERVICE = "com.xconns.peerdevicenet.ConnectionService";
 	public static final String ACTION_GROUP_SERVICE = "com.xconns.peerdevicenet.GroupService";

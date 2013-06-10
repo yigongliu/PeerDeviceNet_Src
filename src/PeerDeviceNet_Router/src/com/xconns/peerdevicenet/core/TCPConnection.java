@@ -23,8 +23,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import android.util.Log;
 
@@ -53,17 +54,19 @@ public class TCPConnection extends Thread implements Connection {
 	int connLivenessTimeout = 0;
 	long lastRecvTime = 0; // last time to recv anything from peer
 	int unanswered_hb = 0;
-	private Timer timer;
+	private ScheduledThreadPoolExecutor timerPool;
 	Object connMonLock = new Object();
 	final static int HB_REQ = -10110; // special int to mark heartbeat
 	final static int HB_RSP = -10111;
 
 	// local msg recver
 	ConnectionRecver recver;
+	//
+	private ScheduledFuture<?> timerTask = null;
 
 	public TCPConnection(Socket s, DataInputStream in, DataOutputStream out,
 			DeviceInfo myInfo, boolean a, int to, byte[] token,
-			String groupInfo, ConnectionRecver r) {
+			String groupInfo, ConnectionRecver r, ScheduledThreadPoolExecutor timer) {
 		sock = s;
 		mInputStream = in;
 		mOutputStream = out;
@@ -72,7 +75,7 @@ public class TCPConnection extends Thread implements Connection {
 		if (mAccepted) {
 			mAcceptConfirmed = true;
 		}
-		timer = new Timer("connMonTimer");
+		timerPool = timer;
 		connLivenessTimeout = to;
 		mToken = token;
 		mMyGroupInfo = groupInfo;
@@ -130,7 +133,7 @@ public class TCPConnection extends Thread implements Connection {
 		}
 	}
 
-	class ConnMonTask extends TimerTask {
+	class ConnMonTask implements Runnable {
 		@Override
 		public void run() {
 			Log.d(TAG, "ConnMonTask runs");
@@ -158,8 +161,9 @@ public class TCPConnection extends Thread implements Connection {
 
 	public void close() {
 		Log.d(TAG, "close() called");
-		if (timer != null) {
-			timer.cancel();
+		if (timerTask != null) {
+			Log.d(TAG, "ConnMonTimer stop");
+			timerTask.cancel(true);
 		}
 		new Thread(new Runnable() {
 			public void run() {
@@ -333,7 +337,7 @@ public class TCPConnection extends Thread implements Connection {
 		// start monitoring conn
 		lastRecvTime = System.currentTimeMillis();
 		connMonTask = new ConnMonTask();
-		timer.schedule(connMonTask, 1000L, connLivenessTimeout); // delay 1 sec
+		timerTask = timerPool.scheduleAtFixedRate(connMonTask, 1000L, connLivenessTimeout, TimeUnit.MILLISECONDS); // delay 1 sec
 																	// to start,
 																	// repeat
 																	// every 4

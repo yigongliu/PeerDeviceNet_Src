@@ -160,6 +160,18 @@
             android:paddingTop="3dip" >
 
             <CheckBox
+                android:id="@+id/use_nfc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/use_nfc_label"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dip"
+                android:background="#99969696" />
+
+            <CheckBox
                 android:id="@+id/use_ssl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -306,6 +318,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="6dip"
+        android:paddingLeft="8dip"
+        android:paddingRight="8dip"
         android:paddingTop="3dip" >
 
         <TextView
@@ -319,6 +333,16 @@
             android:paddingTop="6dip"
             android:text="@string/qrcode_label" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dip"
+            android:paddingLeft="16dip"
+            android:paddingRight="16dip"
+            android:paddingTop="3dip"
+            android:text="@string/keep_qrcode"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <ImageView
             android:id="@+id/qrcode_image"
             android:layout_width="wrap_content"
@@ -326,7 +350,9 @@
             android:layout_gravity="center_horizontal"
             android:contentDescription="barcode_image"
             android:paddingBottom="6dip"
-            android:paddingTop="6dip" />
+            android:paddingLeft="16dip"
+            android:paddingRight="16dip"
+            android:paddingTop="3dip" />
     </LinearLayout>
 
     <LinearLayout

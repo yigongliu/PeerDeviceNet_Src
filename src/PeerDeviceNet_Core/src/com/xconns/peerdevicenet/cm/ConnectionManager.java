@@ -36,9 +36,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -62,8 +60,8 @@ import com.xconns.peerdevicenet.Router.ConnFailureCode;
 import com.xconns.peerdevicenet.core.R;
 import com.xconns.peerdevicenet.core.WifiDirectGroupManager;
 import com.xconns.peerdevicenet.core.WifiHotspotTransport;
-import com.xconns.peerdevicenet.utils.Utils;
 import com.xconns.peerdevicenet.utils.RouterConfig;
+import com.xconns.peerdevicenet.utils.Utils;
 
 interface DeviceHolder {
 	void addConnectDevice(DeviceInfo dev);
@@ -122,8 +120,6 @@ public class ConnectionManager {
     public static final String ACTION_ACTIVE_NETWORK_DISCONNECT = "ACTION_ACTIVE_NETWORK_DISCONNECT";
     public static final String ACTION_ACTIVE_NETWORK_CONNECT = "ACTION_ACTIVE_NETWORK_CONNECT";
     public static final String ACTION_USE_SSL = "ACTION_USE_SSL";
-
-	public static final int SEARCH_FOUND_DEVICE_DIFF_SSL_FLAG = 50000;
 
 	// -- conn GUI widgets --
 
@@ -750,23 +746,26 @@ public class ConnectionManager {
 		if (net != null && connMgrService != null) {
 			connMgrService.connClient.getPeerDevices();
 			connMgrService.getDeviceInfo();
-			// start scan if configured
-			if (!connMgrService.connectorSessionActive()) {
-				connectorSearch = false;
-				if(mConnectorPref != null) {
-					mConnectorPref.stopProgress();
-				}
-				if (mAutoScan && net.addr != null && net.addr.length() > 0
-						&& net.mcast && (scanStarted <= 0)) {
-					Log.d(TAG, "spin1 from NetActivated");
-					start_scan();
-				}
-			} else {
-				Log.d(TAG, "spin2 from NetActivated");
-				connectorSearch = true;
-				if(mConnectorPref != null) {
-					mConnectorPref.startProgress();
-				}
+		}
+	}
+	
+	// start scan if configured
+	void startScanAfterGetDevInfo(NetInfo net) {
+		if (!connMgrService.connectorSessionActive()) {
+			connectorSearch = false;
+			if (mConnectorPref != null) {
+				mConnectorPref.stopProgress();
+			}
+			if (mAutoScan && net.addr != null && net.addr.length() > 0
+					&& net.mcast && (scanStarted <= 0)) {
+				Log.d(TAG, "spin1 from NetActivated");
+				start_scan();
+			}
+		} else {
+			Log.d(TAG, "spin2 from NetActivated");
+			connectorSearch = true;
+			if (mConnectorPref != null) {
+				mConnectorPref.startProgress();
 			}
 		}
 	}
@@ -790,24 +789,6 @@ public class ConnectionManager {
 			if (connMgrService != null) {
 				connMgrService.connClient.getPeerDevices();
 				connMgrService.getDeviceInfo();
-				//start scan if configured
-				if (!connMgrService.connectorSessionActive()) {
-					connectorSearch = false;
-					if (mConnectorPref != null) {
-						mConnectorPref.stopProgress();
-					}
-					if (mAutoScan && an.addr != null && an.addr.length() > 0
-							&& an.mcast && (scanStarted <= 0)) {
-						Log.d(TAG, "spin1 from GetAct");
-						start_scan();
-					}
-				} else {
-					Log.d(TAG, "spin2 from GetAct");
-					connectorSearch = true;
-					if(mConnectorPref != null) {
-						mConnectorPref.startProgress();
-					}
-				}
 			}
 		} else {
 			NetInfo[] nets = connMgrService.getNets();
@@ -911,9 +892,7 @@ public class ConnectionManager {
 			//removeAllPeerDevices();
 			
 			//turn off scan
-			if (scanStarted > 0) {
-				stop_scan();
-			}
+			stop_scan();
 			
 			connMgrService.activateNetwork(net);
 		}
@@ -1397,6 +1376,13 @@ public class ConnectionManager {
 		mDevice.addr = dev.addr;
 		mDevice.port = dev.port;
 		showDeviceInfo(mDevice);
+		//start scan if configured
+		if (connMgrService != null) {
+			NetInfo an = connMgrService.getActNet();
+			if (an != null) {
+				startScanAfterGetDevInfo(an);
+			}
+		}
 	}
 	
 	void onGetConnectionInfo(ConnInfo ci) {
@@ -1567,135 +1553,50 @@ public class ConnectionManager {
 	/**
 	 * Handler of incoming messages from service.
 	 */
-	Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			DeviceInfo dev = null;
-			switch (msg.what) {
-			// handle msgs for scan
-			case ConnectionManager.SEARCH_FOUND_DEVICE_DIFF_SSL_FLAG:
-				Log.d(TAG, "handle SEARCH_FOUND_DEVICE_DIFF_SSL_FLAG");
-				sslDiffDevice = (DeviceInfo) msg.obj;
-				peerSSL = msg.arg1==1;
-
-				mContext.showDialog(PEER_DIFF_SSL_DIALOG);
-
-				Log.d(TAG, "search found peer use diff SSL setting: "
-						+ sslDiffDevice.addr + ", useSSL=" + peerSSL);
-				break;
-			case Router.MsgId.SEARCH_FOUND_DEVICE:
-				dev = (DeviceInfo) msg.obj;
-				addNearbyDevice(dev);
-				break;
-			case Router.MsgId.SEARCH_COMPLETE:
-				if (connectorSearch) {
-					if (mConnectorPref != null) {
-						mConnectorPref.stopProgress();
-					}
-					connectorSearch = false;
-				} else {
-					scanStarted--;
-					if (scanStarted <= 0 && mScanNearbyPref != null) {
-						mScanNearbyPref.stopProgress();
-					}
-				}
-				break;
-			// handle msgs for connections
-			case Router.MsgId.CONNECTED:
-				// Toast.makeText(WifiChatByIntentingActivity.this,
-				// "peer connected", Toast.LENGTH_SHORT).show();
-				Log.d(TAG, "peer connected");
-				DeviceInfo device = (DeviceInfo) msg.obj;
-				onConnectPeerDevice(device);
-				break;
-			case Router.MsgId.DISCONNECTED:
-				Log.d(TAG, "peer disconnected");
-				device = (DeviceInfo) msg.obj;
-				if (device != null) {
-					onDisconnectPeerDevice(device);
-				}
-
-				break;
-			case Router.MsgId.GET_CONNECTED_PEERS:
-				Log.d(TAG, "get connected peers");
-				DeviceInfo[] devices = (DeviceInfo[]) msg.obj;
-				if (devices != null && devices.length > 0)
-					for (int i = 0; i < devices.length; i++) {
-						connMgrService.discoveredDevices.put(devices[i].addr,
-								devices[i]);
-						onConnectPeerDevice(devices[i]);
-					}
-				break;
-			case Router.MsgId.CONNECTING:
-				dev = (DeviceInfo) msg.obj;
-				Log.d(TAG, "bring up conn-confirm dialog: mAutoAccept="
-						+ mAutoAccept);
-				showConnConfirmDialog(dev);
-				break;
-			case Router.MsgId.CONNECTION_FAILED:
-				connFailDevice = (DeviceInfo) msg.obj;
-				connFailCode = msg.arg1;
-				// String denyMsg = Router.ConnFailureMsg(connFailCode);
-				// remove it from GUI
-				if (connFailDevice != null) {
-					onDisconnectPeerDevice(connFailDevice);
-				}
-				// dont report FAIL_UNKNOWN_PEER, since this device is trying
-				// hijacking
-				// dont report FAIL_CONN_EXIST, no need to bother user with
-				// this
-				if (connFailCode == Router.ConnFailureCode.FAIL_CONNMGR_INACTIVE
-						|| connFailCode == Router.ConnFailureCode.FAIL_PIN_MISMATCH
-						|| connFailCode == Router.ConnFailureCode.FAIL_CONN_SELF
-						|| connFailCode == Router.ConnFailureCode.FAIL_REJECT_BY_USER) {
-
-					mContext.showDialog(CONNECTION_FAIL_DIALOG);
-				}
-				Log.d(TAG, "failed connection attempt to: "
-						+ connFailDevice.addr + ", " + connFailCode);
-				break;
-			case Router.MsgId.GET_DEVICE_INFO:
-				dev = (DeviceInfo) msg.obj;
-				onGetDeviceInfo(dev);
-				break;
-
-			case Router.MsgId.ERROR:
-				String errMsg = (String) msg.obj;
-				Toast.makeText(mContext, "Error : " + errMsg, Toast.LENGTH_LONG)
-						.show();
-				Log.e(TAG, errMsg);
-				// Toast.makeText(WifiChatByIntentingActivity.this,
-				// "connection failed: "+msg, Toast.LENGTH_SHORT).show();
-				break;
-			case Router.MsgId.GET_NETWORKS:
-				onGetNetworks((NetInfo[]) msg.obj);
-				break;
-			case Router.MsgId.GET_ACTIVE_NETWORK:
-				onGetActiveNetwork((NetInfo) msg.obj);
-				break;
-			case Router.MsgId.ACTIVATE_NETWORK:
-				onNetworkActivated((NetInfo) msg.obj);
-				break;
-			case Router.MsgId.NETWORK_CONNECTED:
-				onNetworkConnected((NetInfo) msg.obj);
-				break;
-			case Router.MsgId.NETWORK_DISCONNECTED:
-				onNetworkDisconnected((NetInfo) msg.obj);
-				break;
-			case Router.MsgId.SET_CONNECTION_INFO:
-				if (connMgrService != null) {
-					connMgrService.getConnectionInfo();
-				}
-				break;
-			case Router.MsgId.GET_CONNECTION_INFO:
-				ConnInfo ci = (ConnInfo) msg.obj;
-				onGetConnectionInfo(ci);
-				break;
-			default:
-				Log.d(TAG, "unhandled msg: " + Router.MsgName(msg.what));
-				super.handleMessage(msg);
+	void onSearchFoundDiffSSLFlag(DeviceInfo sslDiffDevice, boolean peerSSL) {
+		Log.d(TAG, "handle SEARCH_FOUND_DEVICE_DIFF_SSL_FLAG");
+		mContext.showDialog(PEER_DIFF_SSL_DIALOG);
+		Log.d(TAG, "search found peer use diff SSL setting: "
+				+ sslDiffDevice.addr + ", useSSL=" + peerSSL);
+	}
+	
+	void onSearchComplete() {
+		if (connectorSearch) {
+			if (mConnectorPref != null) {
+				mConnectorPref.stopProgress();
+			}
+			connectorSearch = false;
+		} else {
+			scanStarted--;
+			if (scanStarted <= 0 && mScanNearbyPref != null) {
+				mScanNearbyPref.stopProgress();
 			}
 		}
-	};
+	}
+	
+	void onConnectionFailed(DeviceInfo connFailDevice, int connFailCode){
+		if (connFailDevice != null) {
+			onDisconnectPeerDevice(connFailDevice);
+		}
+		// dont report FAIL_UNKNOWN_PEER, since this device is trying
+		// hijacking
+		// dont report FAIL_CONN_EXIST, no need to bother user with
+		// this
+		if (connFailCode == Router.ConnFailureCode.FAIL_CONNMGR_INACTIVE
+				|| connFailCode == Router.ConnFailureCode.FAIL_PIN_MISMATCH
+				|| connFailCode == Router.ConnFailureCode.FAIL_CONN_SELF
+				|| connFailCode == Router.ConnFailureCode.FAIL_REJECT_BY_USER) {
 
+			mContext.showDialog(CONNECTION_FAIL_DIALOG);
+		}
+		Log.d(TAG, "failed connection attempt to: "
+				+ connFailDevice.addr + ", " + connFailCode);
+
+	}
+	
+	void onError(String errMsg) {
+		Toast.makeText(mContext, "Error : " + errMsg, Toast.LENGTH_LONG)
+				.show();
+		Log.e(TAG, errMsg);
+	}
 }
