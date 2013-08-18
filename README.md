@@ -6,7 +6,7 @@ source code for PeerDeviceNet core runtime, connection manager and peer connecto
 
 src/PeerDeviceNet_Router:
 
-	PeerDeviceNet kernel
+	PeerDeviceNet kernel runtime
 
 	* the core runtime which handles network detection, peer discovery, peer device connection and group communication.
 	* provides 3 layers of APIs(idl/messenger/intents) to access the runtime functions as documented in user_guide.
@@ -21,7 +21,7 @@ src/PeerDeviceNet_Core:
 
 	* add ConnectionManager preference GUI to show connected devices and connection parameters.
 	* support peer discovery and connection thru network multicast.
-	* add PeerConnector(GUI) to support discovery and connection by using camera scanning QR code.
+	* add PeerConnector(GUI) to support discovery and connection by using NFC/Beam or camera scanning QR code.
 	* implement the full peer-join protocol for discovery and connection as described in design doc.
 	* an standalone android app which can be reused directly as a component of another connected mobile app; can be invoked thru android intent (See PeerDeviceNet_Chat for a sample).
 
