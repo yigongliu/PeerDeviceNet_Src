@@ -120,7 +120,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 	@Override
 	protected void onPostExecute(Boolean success) {
 		if (!success) {
-			ctor.showDialog(ctor.WIFI_CONNECTOR_FAIL_DIALOG);
+			ctor.showConnectorFailMsg();
 		}
 	}
 

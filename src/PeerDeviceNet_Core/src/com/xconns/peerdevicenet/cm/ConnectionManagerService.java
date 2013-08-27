@@ -76,7 +76,7 @@ public class ConnectionManagerService extends Service {
 	int searchTimeout = 30000; // def 30 seconds
 	int connTimeout = 5000; // 5 seconds
 	boolean useSSL = true;
-	DeviceInfo mDevice;
+	DeviceInfo mDevice = new DeviceInfo();//reset by connMgr
 
 	public int scanStarted = 0;
 	public int scanLeftOver = 0;
@@ -255,6 +255,7 @@ public class ConnectionManagerService extends Service {
 	}
 
 	public void stopPeerSearch() {
+		Log.d(TAG,"stopPeerSearch");
 		connClient.stopPeerSearch();
 	}
 
@@ -720,10 +721,6 @@ public class ConnectionManagerService extends Service {
 			case Router.MsgId.GET_DEVICE_INFO:
 				device = (DeviceInfo) msg.obj;
 				Log.d(TAG, "onGetDeviceInfo: " + device.toString());
-				if (device != null && device.addr != null) {
-						mDevice.addr = device.addr;
-						mDevice.port = device.port;
-				}
 				if (connMgr != null) {
 					connMgr.onGetDeviceInfo(device);
 				}

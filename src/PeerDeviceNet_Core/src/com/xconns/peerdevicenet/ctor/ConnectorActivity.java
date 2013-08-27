@@ -900,7 +900,7 @@ public class ConnectorActivity extends Activity {
 	}
 	
 	public void onGetDeviceInfo(DeviceInfo dev) {
-		
+		connMgrService.setDeviceInfo(dev);
 	}
 	
 	public void onSetConnectionInfo() {
@@ -949,6 +949,12 @@ public class ConnectorActivity extends Activity {
 		Toast.makeText(this, "Error : " + errMsg, Toast.LENGTH_LONG)
 				.show();
 		Log.e(TAG, errMsg);
+	}
+	
+	public void showConnectorFailMsg() {
+		if (Closed)
+			return;
+		showDialog(WIFI_CONNECTOR_FAIL_DIALOG);
 	}
 	
 	public void onGetConnectionInfo(){
