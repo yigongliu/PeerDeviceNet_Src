@@ -46,6 +46,9 @@
         <Preference
             android:key="license"
             android:title="@string/license" />
+        <Preference
+            android:key="thanks"
+            android:title="@string/thanks" />
         </PreferenceCategory>
     
 </PreferenceScreen>

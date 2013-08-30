@@ -103,6 +103,8 @@
     <string name="unknown">未知</string>
     <string name="peers"></string>
     <string name="license">许可协议</string>
+    <string name="thanks">特别感谢</string>
+    <string name="thanks_title">特别感谢</string>
     <string name="tutorial">简单介绍</string>
     <string name="license_tutorial">许可协议 简单介绍</string>
     <string name="router_notif_ticker">友机互联网服务启动</string>

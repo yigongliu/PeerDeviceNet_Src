@@ -79,6 +79,7 @@ public class ConnectionManager {
 	static final int PEER_DIFF_SSL_DIALOG = 5;
 	static final int LICENSE_DIALOG = 10;
 	static final int TUTORIAL_DIALOG = 11;
+	static final int THANKS_DIALOG = 12;
 
 	// preference keys
 	public static final String PREF_KEY_SHUTDOWN = "shutdown";
@@ -109,6 +110,7 @@ public class ConnectionManager {
 
 	public static final String PREF_KEY_LICENSE = "license";
 	public static final String PREF_KEY_TUTORIAL = "tutorial";
+	public static final String PREF_KEY_THANKS = "thanks";
 
 	PreferenceActivity mContext = null;
 	
@@ -142,6 +144,7 @@ public class ConnectionManager {
 	
 	Preference mLicensePref = null;
 	Preference mTutorialPref = null;
+	Preference mThanksPref = null;
 
 	EditTextPreference mDeviceNamePref = null;
 
@@ -510,6 +513,18 @@ public class ConnectionManager {
 						return true;
 					}
 				});
+		
+		mThanksPref = (Preference) prefScreen
+				.findPreference(ConnectionManager.PREF_KEY_THANKS);
+		mThanksPref
+				.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+					public boolean onPreferenceClick(Preference preference) {
+						Log.d(TAG, "show thanks info");
+						mContext.showDialog(THANKS_DIALOG);
+						return true;
+					}
+				});
+
 
 	}
 
@@ -1180,6 +1195,35 @@ public class ConnectionManager {
 								public void onClick(
 										DialogInterface dialogInterface, int i) {
 									mContext.removeDialog(TUTORIAL_DIALOG);
+								}
+							}).create();
+		case THANKS_DIALOG:
+			message = null;
+			is = mContext.getResources().openRawResource(R.raw.thanks);
+			bo = new ByteArrayOutputStream();
+			try {
+				i = is.read();
+				while (i != -1) {
+					bo.write(i);
+					i = is.read();
+				}
+				is.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+			message = bo.toString();
+
+			return new AlertDialog.Builder(mContext)
+					.setTitle(R.string.thanks_title)
+					.setIcon(R.drawable.router_icon)
+					.setMessage(message)
+					.setCancelable(false)
+					.setPositiveButton(R.string.ok,
+							new Dialog.OnClickListener() {
+
+								public void onClick(
+										DialogInterface dialogInterface, int i) {
+									mContext.removeDialog(THANKS_DIALOG);
 								}
 							}).create();
 		default:

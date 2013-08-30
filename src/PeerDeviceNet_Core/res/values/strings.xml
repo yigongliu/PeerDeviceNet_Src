@@ -129,6 +129,8 @@
     <string name="cleanup_title">Cleanup</string>
     <string name="cleanup_detail">Cancel all current data transfers</string>
     <string name="license">License</string>
+    <string name="thanks_title">Special Thanks</string>
+    <string name="thanks">Special thanks</string>
     <string name="tutorial">Tutorial</string>
     <string name="license_tutorial">License and tutorial</string>
     

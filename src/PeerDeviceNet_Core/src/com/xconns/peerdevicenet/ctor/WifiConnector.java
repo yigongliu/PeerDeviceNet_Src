@@ -32,7 +32,7 @@ import android.util.Log;
  * @author Vikram Aggarwal
  * @author Sean Owen
  */
-public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> {
+public final class WifiConnector extends AsyncTask<PeerNetInfo, Object, Boolean> {
 
 	private static final String TAG = WifiConnector.class.getSimpleName();
 
@@ -47,8 +47,8 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 	}
 
 	@Override
-	protected Boolean doInBackground(QRCodeData... args) {
-		QRCodeData wifiData = args[0];
+	protected Boolean doInBackground(PeerNetInfo... args) {
+		PeerNetInfo wifiData = args[0];
 		// Start WiFi, otherwise nothing will work
 		if (!wifiManager.isWifiEnabled()) {
 			Log.i(TAG, "Enabling wi-fi...");
@@ -159,7 +159,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 	
 
 
-	private static WifiConfiguration changeNetworkCommon(QRCodeData wifiResult) {
+	private static WifiConfiguration changeNetworkCommon(PeerNetInfo wifiResult) {
 		WifiConfiguration config = new WifiConfiguration();
 		config.allowedAuthAlgorithms.clear();
 		config.allowedGroupCiphers.clear();
@@ -175,7 +175,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 
 	// Adding a WEP network
 	private static void changeNetworkWEP(WifiManager wifiManager,
-			QRCodeData wifiResult) {
+			PeerNetInfo wifiResult) {
 		WifiConfiguration config = changeNetworkCommon(wifiResult);
 		config.wepKeys[0] = quoteNonHex(wifiResult.passwd, 10, 26, 58);
 		config.wepTxKeyIndex = 0;
@@ -191,7 +191,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 
 	// Adding a WPA or WPA2 network
 	private static void changeNetworkWPA(WifiManager wifiManager,
-			QRCodeData wifiResult) {
+			PeerNetInfo wifiResult) {
 		WifiConfiguration config = changeNetworkCommon(wifiResult);
 		// Hex passwords that are 64 bits long are not to be quoted.
 		config.preSharedKey = quoteNonHex(wifiResult.passwd, 64);
@@ -211,7 +211,7 @@ public final class WifiConnector extends AsyncTask<QRCodeData, Object, Boolean> 
 
 	// Adding an open, unsecured network
 	private static void changeNetworkUnEncrypted(WifiManager wifiManager,
-			QRCodeData wifiResult) {
+			PeerNetInfo wifiResult) {
 		WifiConfiguration config = changeNetworkCommon(wifiResult);
 		config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 		updateNetwork(wifiManager, config);
