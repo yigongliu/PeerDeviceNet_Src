@@ -1,0 +1,4 @@
+A big thank you to all of these great people who helped, sent feedbacks and suggestions for the previous releases.
+
+PeerDeviceNet uses Zebra Crossing (zxing) library for generating QR code for connection information and scanning and decoding of these information. 
+https://code.google.com/p/zxing

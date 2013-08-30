@@ -18,14 +18,14 @@ package com.xconns.peerdevicenet.ctor;
 
 import com.xconns.peerdevicenet.NetInfo;
 
-public class QRCodeData {
+public class PeerNetInfo {
 	public String ssid;
 	public String passwd;
 	public int encrypt;
 	public boolean hidden;
 	public boolean useSSL;
 	public String addr;
-	public QRCodeData(String s, String p, int t, boolean h, boolean u, String a) {
+	public PeerNetInfo(String s, String p, int t, boolean h, boolean u, String a) {
 		ssid = s;
 		passwd = p;
 		encrypt = t;
@@ -46,7 +46,7 @@ public class QRCodeData {
 		}
 		return String.format("%s~=>%s~=>%s~=>%s~=>%s~=>%s", ssid, pass, NetInfo.NetEncryptionName(encrypt), hidden, useSSL, addr);
 	}
-	public final static QRCodeData decode(String r) {
+	public final static PeerNetInfo decode(String r) {
 		String[] rs = r.split("~=>");
 		if (rs != null && rs.length >= 4) {
 			int enc = NetInfo.NoPass;
@@ -61,7 +61,7 @@ public class QRCodeData {
 			boolean useSSL = false;
 			if ("true".equals(rs[4])) useSSL = true;
 			String addr = rs[5];
-			return new QRCodeData(rs[0], rs[1], enc, h, useSSL, addr);
+			return new PeerNetInfo(rs[0], rs[1], enc, h, useSSL, addr);
 		}
 		return null;
 	}
